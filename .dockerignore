@@ -1,0 +1,5 @@
+# docker-ignore
+
+.venv
+.git
+.gitignore

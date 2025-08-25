@@ -1,0 +1,24 @@
+services:
+  app_service:
+    build: . # indica o dockerfile
+    command: tail -f /dev/null
+    container_name: container_app # nome específico do container
+    volumes:
+      - ./:/app # sincroniza pasta atual com a pasta app do projeto
+    tty: true # mantem o container rodando
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db_service
+
+  db_service:
+    image: postgres:16
+    volumes: 
+      - postgres_data:/var/lib/potgresql/data/
+    environment:
+        - "POSTGRES_HOST_AUTH_METHOD=trust"
+
+volumes:
+  postgres_data:
+
+
