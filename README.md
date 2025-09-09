@@ -15,8 +15,8 @@ Algumas funcionalidades e condições especiais para a apresentação e conclus�
 - Testes para o funcionamento adequado do sistema.
 
 O Projeto Consiste das seguintes ferramentas como principais:
-- Python
+- Java 17
 - Docker
-- Django
-- DRF
+- Spring Boot
+- Postgres
 e outros como apontados aqui na documentação oficial.
