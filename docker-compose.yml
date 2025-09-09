@@ -1,24 +1,35 @@
 services:
-  app_service:
-    build: . # indica o dockerfile
-    command: tail -f /dev/null
-    container_name: container_app # nome específico do container
-    volumes:
-      - ./:/app # sincroniza pasta atual com a pasta app do projeto
-    tty: true # mantem o container rodando
-    ports:
-      - "8000:8000"
-    depends_on:
-      - db_service
-
   db_service:
     image: postgres:16
     volumes: 
-      - postgres_data:/var/lib/potgresql/data/
+      - postgres_data:/var/lib/postgresql/data/
     environment:
-        - "POSTGRES_HOST_AUTH_METHOD=trust"
+        - POSTGRES_DB=${POSTGRES_DB}  # Adicionado banco, usuário e senha
+        - POSTGRES_USER=${POSTGRES_USER}
+        - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+        - POSTGRES_HOST_AUTH_METHOD=${POSTGRES_HOST_AUTH_METHOD}  # Isso permite acesso sem senha
+    ports:
+    - "5432:5432"
+    networks:
+    - app-net
 
+  app_service:
+    build: . # indica o dockerfile
+    container_name: spring_app # nome específico do container
+
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db_service
+    environment:
+      SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL}
+      SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
+    networks:
+      - app-net
+      
 volumes:
   postgres_data:
 
-
+networks:
+  app-net:

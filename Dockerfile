@@ -1,17 +1,18 @@
 # Dockerfile
 
-FROM python:3.13
-
-ENV PIP_DISABLE_PIP_VERSION_CHECK 1
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONUNBUFFERED 1
-
+# Build
+FROM maven:3.9.6-eclipse-temurin-17 AS builder
 WORKDIR /app
-
-COPY ./requirements.txt .
-
-RUN pip install -r requirements.txt
-
 COPY . .
+RUN mvn clean package -DskipTests
 
-CMD ["python","--version"]
+# Execução
+FROM eclipse-temurin:17-jdk
+WORKDIR /app
+VOLUME /tmp
+COPY --from=builder /app/target/*.jar app.jar
+
+# Variaveis de ambiente aqui
+#
+EXPOSE 8080
+ENTRYPOINT ["java", "-jar", "app.jar"]
