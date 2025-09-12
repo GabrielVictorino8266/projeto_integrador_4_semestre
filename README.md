@@ -19,4 +19,6 @@ O Projeto Consiste das seguintes ferramentas como principais:
 - Docker
 - Spring Boot
 - Postgres
-e outros como apontados aqui na documentação oficial.
+
+
+outros como apontados aqui na documentação oficial.
