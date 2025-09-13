@@ -1,10 +1,18 @@
+# Documentação ou arquivos auxiliares
 HELP.md
+
+# Build e wrapper
 target/
+build/
 .mvn/wrapper/maven-wrapper.jar
+
+# Permitir build dentro de src (caso necessário)
 !**/src/main/**/target/
 !**/src/test/**/target/
+!**/src/main/**/build/
+!**/src/test/**/build/
 
-### STS ###
+# Spring Tool Suite (STS)
 .apt_generated
 .classpath
 .factorypath
@@ -13,21 +21,114 @@ target/
 .springBeans
 .sts4-cache
 
-### IntelliJ IDEA ###
-.idea
+# IntelliJ IDEA
+.idea/
 *.iws
 *.iml
 *.ipr
 
-### NetBeans ###
+# NetBeans
 /nbproject/private/
 /nbbuild/
 /dist/
 /nbdist/
 /.nb-gradle/
-build/
-!**/src/main/**/build/
-!**/src/test/**/build/
 
-### VS Code ###
+# VS Code
 .vscode/
+
+# Arquivos de ambiente e variáveis sensíveis
+.env
+.env.*
+application.properties
+application.yml
+application.yaml
+application-*.properties
+application-*.yml
+application-*.yaml
+config/application-*.yml
+config/application-*.properties
+
+# Chaves e certificados
+*.key
+*.pem
+*.crt
+*.pfx
+*.jks
+*.keystore
+*.p12
+
+# Dumps e arquivos do banco de dados
+*.sql
+*.dump
+*.backup
+*.pgsql
+db/
+database/
+*.db
+*.db3
+*.sqlite
+
+# Logs
+*.log
+logs/
+log/
+*.out
+
+# Arquivos temporários
+*.tmp
+*.swp
+*.bak
+*.pid
+*.seed
+*.orig
+*.rej
+
+# Caches
+.cache/
+.tmp/
+.terraform/
+.gradle/
+target/
+out/
+
+# Arquivos de teste e cobertura
+jacoco.exec
+test-results/
+coverage/
+*.ec
+*.exec
+
+# IDEs e ferramentas específicas
+*.classpath
+*.settings/
+*.metadata/
+*.recommenders/
+
+# Maven
+dependency-reduced-pom.xml
+release.properties
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+buildNumber.properties
+.mvn/timing.properties
+
+# Arquivos locais
+*.local
+*.secret
+*.token
+*.envrc
+
+# Sistema operacional
+.DS_Store
+Thumbs.db
+
+# Git-credentials (NUNCA versionar)
+.git-credentials
+
+# Arquivos sensíveis personalizados
+secrets/
+keys/
+certs/
