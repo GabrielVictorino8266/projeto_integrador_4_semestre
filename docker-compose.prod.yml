@@ -11,12 +11,17 @@ services:
     ports:
       - "${DB_PORT}:5432"
     networks:
-    - app-net
+      - app-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
 
   app_service:
-    build: . # indica o dockerfile
-    container_name: spring_app # nome específico do container
-
+    build: .
+    container_name: spring_app
     ports:
       - "${SPRING_PORT}:8080"
     depends_on:
@@ -27,6 +32,12 @@ services:
       SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
     networks:
       - app-net
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/actuator/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
       
 volumes:
   postgres_data:
