@@ -39,6 +39,8 @@ build/
 
 # Arquivos de ambiente e variáveis sensíveis
 .env
+.env.dev
+.env.prod
 application.properties
 application.yml
 application.yaml
