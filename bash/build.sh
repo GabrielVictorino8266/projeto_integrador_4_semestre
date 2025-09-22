@@ -30,40 +30,73 @@ else
     UP_FLAGS="--build -d"
 fi
 
+
+# Verifica se o arquivo .env existe
+if [ ! -f "$ENV_FILE" ]; then
+    echo -e "${RED}Erro: Arquivo $ENV_FILE não encontrado.${NC}"
+    exit 1
+fi
+
 echo -e "${BLUE}===============================${NC}"
 echo -e "${BLUE}Iniciando script do Docker ($ENV)...${NC}"
 echo -e "${BLUE}===============================${NC}"
 
+# Remove containers antigos
+$DOCKER_BIN -f "$COMPOSE_FILE" --env-file "$ENV_FILE" down -v
+
 # Inicializa os containers
 $DOCKER_BIN -f "$COMPOSE_FILE" --env-file "$ENV_FILE" up $UP_FLAGS
-# Note: This will use cache unless you combine with build --no-cache first
-echo -e "${YELLOW}[INFO] Aguardando containers ficarem prontos...${NC}"
-
-# # Debug: exibe status dos containers
-# echo -e "${YELLOW}[DEBUG] Status dos containers:${NC}"
-# $DOCKER_BIN -f "$COMPOSE_FILE" ps
-
-# # Debug: exibe status de saúde
-# echo -e "${YELLOW}[DEBUG] Status de saúde:${NC}"
-# $DOCKER_BIN -f "$COMPOSE_FILE" ps -a --format "table {{.Name}}\t{{.Status}}\t{{.Health}}"
 
 # Verificar saúde dos containers
 SERVICES=$($DOCKER_BIN -f "$COMPOSE_FILE" config --services --no-interpolate)
-TOTAL_SERVICES=$(echo "$SERVICES" | wc -l)
 
-while true; do
-    # Conta quantos serviços estão em execução
-    RUNNING_COUNT=$($DOCKER_BIN -f "$COMPOSE_FILE" ps -q 2>/dev/null | xargs docker inspect -f '{{if eq .State.Health.Status "healthy"}}1{{end}}' 2>/dev/null | grep -c 1)
+echo -e "${YELLOW}[INFO] Verificando status dos containers...${NC}"
 
-    if [ "$RUNNING_COUNT" -eq "$TOTAL_SERVICES" ]; then
-        echo -e "${GREEN}[INFO] Todos os containers estão rodando! ($RUNNING_COUNT/$TOTAL_SERVICES)${NC}"
-        break
-    else
-        echo -e "${YELLOW}[INFO] Aguardando containers... ($RUNNING_COUNT/$TOTAL_SERVICES)${NC}"
-        sleep 2
-    fi
+for SERVICE in $SERVICES; do
+    echo -e "${BLUE}[INFO] Verificando serviço: $SERVICE${NC}"
+    
+    while true; do
+        # Obter status do container do serviço
+        CONTAINER_STATUS=$($DOCKER_BIN -f "$COMPOSE_FILE" ps -q "$SERVICE" 2>/dev/null | xargs docker inspect -f '{{.State.Status}}' 2>/dev/null)
+        
+        if [ $? -ne 0 ] || [ -z "$CONTAINER_STATUS" ]; then
+            echo -e "${RED}[ERROR] Erro ao verificar status do serviço $SERVICE${NC}"
+            break
+        fi
+        
+        case "$CONTAINER_STATUS" in
+            "running")
+                # Verificar se tem health check
+                HEALTH_STATUS=$($DOCKER_BIN -f "$COMPOSE_FILE" ps -q "$SERVICE" 2>/dev/null | xargs docker inspect -f '{{.State.Health.Status}}' 2>/dev/null)
+                
+                if [ "$HEALTH_STATUS" = "healthy" ] || [ "$HEALTH_STATUS" = "<no value>" ]; then
+                    echo -e "${GREEN}[INFO] ✓ $SERVICE está rodando${NC}"
+                    break
+                elif [ "$HEALTH_STATUS" = "unhealthy" ]; then
+                    echo -e "${RED}[ERROR] ✗ $SERVICE está rodando mas não está saudável${NC}"
+                    break
+                else
+                    echo -e "${YELLOW}[INFO] ⏳ $SERVICE aguardando health check...${NC}"
+                    sleep 2
+                fi
+                ;;
+            "restarting"|"starting")
+                echo -e "${YELLOW}[INFO] ⏳ $SERVICE está iniciando...${NC}"
+                sleep 2
+                ;;
+            "exited")
+                echo -e "${RED}[ERROR] ✗ $SERVICE parou inesperadamente${NC}"
+                break
+                ;;
+            *)
+                echo -e "${RED}[ERROR] ✗ $SERVICE em status desconhecido: $CONTAINER_STATUS${NC}"
+                break
+                ;;
+        esac
+    done
 done
 
+echo -e "${GREEN}[INFO] Verificação concluída!${NC}"
 
 echo -e "${BLUE}===============================${NC}"
 echo -e "${BLUE}Script do Docker finalizado.${NC}"
