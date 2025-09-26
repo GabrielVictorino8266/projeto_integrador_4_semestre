@@ -37,7 +37,11 @@ services:
       SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
       SPRING_PROFILES_ACTIVE: dev
       SPRING_DEVTOOLS_RESTART_ENABLED: true
-    command: ["mvn", "spring-boot:run"]
+    command: [
+      "mvn", 
+      "spring-boot:run", 
+      "-Dspring-boot.run.jvmArguments=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:${SPRING_DEBUG_PORT:-5005}"
+    ]
     volumes:
       - .:/app
     networks:
