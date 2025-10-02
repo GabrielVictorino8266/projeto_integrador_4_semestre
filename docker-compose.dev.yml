@@ -1,0 +1,61 @@
+services:
+  db_service:
+    image: postgres:16
+    volumes: 
+      - postgres_data:/var/lib/postgresql/data/
+    env_file:
+      - .env.dev
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_HOST_AUTH_METHOD=${POSTGRES_HOST_AUTH_METHOD}
+    ports:
+      - "${DB_PORT}:5432"
+    networks:
+      - app-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+
+  app_service:
+    image: maven:3.9.6-eclipse-temurin-17
+    container_name: spring_app_dev
+    working_dir: /app
+    env_file:
+      - .env.dev
+    ports:
+      - "${SPRING_PORT}:8080"
+      - "${SPRING_DEBUG_PORT:-5005}:5005"
+    depends_on:
+      - db_service
+    environment:
+      SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL}
+      SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
+      SPRING_PROFILES_ACTIVE: dev
+      SPRING_DEVTOOLS_RESTART_ENABLED: true
+    command: [
+      "mvn", 
+      "spring-boot:run", 
+      "-Dspring-boot.run.jvmArguments=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:${SPRING_DEBUG_PORT:-5005}"
+    ]
+    volumes:
+      - .:/app
+    networks:
+      - app-net
+    healthcheck:
+      test: ["CMD-SHELL", "timeout 3 curl -f http://localhost:8080/actuator/health || exit 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+      
+volumes:
+  postgres_data:
+
+networks:
+  app-net:

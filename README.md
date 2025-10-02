@@ -20,5 +20,20 @@ O Projeto Consiste das seguintes ferramentas como principais:
 - Spring Boot
 - Postgres
 
-
 outros como apontados aqui na documentação oficial.
+
+### Executando o projeto
+
+* **Ambiente de desenvolvimento**
+
+```bash
+cd projeto_integrador_4_semestre
+./bash/build.sh
+```
+
+* **Ambiente de produção**
+
+```bash
+cd projeto_integrador_4_semestre
+./bash/build.sh prod
+```
