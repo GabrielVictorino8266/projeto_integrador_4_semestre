@@ -3,7 +3,6 @@ package com.projetoanderson.app.model.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import java.time.LocalDateTime;
-import java.time.Year;
 
 import com.projetoanderson.app.model.entity.enums.StatusVeiculo;
 import com.projetoanderson.app.model.entity.enums.TipoVeiculo;
@@ -23,7 +22,6 @@ public class Veiculo {
 
     @NotBlank
     @Size(max = 8)
-    @Pattern(regexp = "^[A-Z]{3}[0-9][0-9A-Z][0-9]{2}$")
     @Column(name = "placa", nullable = false, length = 8, unique = true)
     private String placa;
 
@@ -33,8 +31,6 @@ public class Veiculo {
     private TipoVeiculo tipoVeiculo;
 
     @NotNull
-    @Min(value = 1900, message = "Ano de fabricação não pode ser menor que 1900")
-    @Max(value = Year.MAX_VALUE, message = "Ano de fabricação inválido")
     @Column(name = "ano_fabricacao", nullable = false)
     private Integer anoFabricacao;
 
@@ -44,12 +40,10 @@ public class Veiculo {
     private String marca;
 
     @NotNull
-    @Min(0)
     @Column(name = "km_atual", nullable = false)
     private Integer kmAtual;
 
     @NotNull
-    @Min(0)
     @Column(name = "limite_aviso_km", nullable = false)
     private Integer limiteAvisoKm;
 

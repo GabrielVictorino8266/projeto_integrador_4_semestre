@@ -1,5 +1,7 @@
 package com.projetoanderson.app.model.entity.enums;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+
 public enum TipoVeiculo {
 
     CARRO("carro", "Carro"),
@@ -24,8 +26,8 @@ public enum TipoVeiculo {
         return descricao;
     }
 
-    // Para buscar enum pelo valor persistido
-    public static TipoVeiculo fromValor(String valor) {
+    @JsonCreator
+    public static TipoVeiculo fromString(String valor) {
         for (TipoVeiculo t : TipoVeiculo.values()) {
             if (t.valor.equalsIgnoreCase(valor)) {
                 return t;
