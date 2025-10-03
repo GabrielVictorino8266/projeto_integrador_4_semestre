@@ -37,3 +37,67 @@ cd projeto_integrador_4_semestre
 cd projeto_integrador_4_semestre
 ./bash/build.sh prod
 ```
+
+* **Estrutura de pastas**
+.
+```md
+├── bash
+├── src
+│   ├── main
+│   │   ├── java
+│   │   │   └── com
+│   │   │       └── projetoanderson
+│   │   │           └── app
+│   │   │               ├── config
+│   │   │               ├── controller
+│   │   │               ├── exception
+│   │   │               ├── model
+│   │   │               │   ├── dto
+│   │   │               │   └── entity
+│   │   │               │       └── enums
+│   │   │               ├── repository
+│   │   │               ├── service
+│   │   │               └── validation
+│   │   └── resources
+│   └── test
+│       └── java
+│           └── com
+│               └── projetoanderson
+│                   └── app
+│                       └── model
+│                           ├── dto
+│                           └── entity
+├── target
+│   ├── classes
+│   │   └── com
+│   │       └── projetoanderson
+│   │           └── app
+│   │               ├── config
+│   │               ├── controller
+│   │               ├── exception
+│   │               ├── model
+│   │               │   ├── dto
+│   │               │   └── entity
+│   │               │       └── enums
+│   │               ├── repository
+│   │               ├── service
+│   │               └── validation
+│   ├── generated-sources
+│   │   └── annotations
+│   ├── generated-test-sources
+│   │   └── test-annotations
+│   ├── maven-status
+│   │   └── maven-compiler-plugin
+│   │       ├── compile
+│   │       │   └── default-compile
+│   │       └── testCompile
+│   │           └── default-testCompile
+│   └── test-classes
+│       └── com
+│           └── projetoanderson
+│               └── app
+│                   └── model
+│                       ├── dto
+│                       └── entity
+└── wrapper
+```
