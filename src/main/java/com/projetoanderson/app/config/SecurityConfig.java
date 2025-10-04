@@ -21,6 +21,16 @@ import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 
+/**
+ * Configuração da segurança da aplicação
+ * 
+ * <p>Classe que define a configuração de segurança com Spring Security, usando o JWT baseado em chaves RSA. 
+ * Aqui também desabilita CSRF para permitir o uso API REST.</p>
+ * <p>As chaves são injetadas a partir dos arquivos .properties.</p>
+ * 
+ * @author Gabriel Victorino
+ * @since 2025-04-10
+ * */
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
