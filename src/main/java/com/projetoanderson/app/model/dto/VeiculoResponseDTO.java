@@ -3,7 +3,7 @@ package com.projetoanderson.app.model.dto;
 import com.projetoanderson.app.model.entity.Veiculo;
 import com.projetoanderson.app.model.entity.enums.TipoVeiculo;
 
-public record VeiculoResponseDto(
+public record VeiculoResponseDTO(
     Long id,
     String numeroVeiculo,
     String placa,
@@ -13,7 +13,7 @@ public record VeiculoResponseDto(
     Integer kmAtual,
     Integer limiteAvisoKm
 ) {
-    public VeiculoResponseDto(Veiculo veiculo) {
+    public VeiculoResponseDTO(Veiculo veiculo) {
         this(
             veiculo.getId(),
             veiculo.getNumeroVeiculo(),

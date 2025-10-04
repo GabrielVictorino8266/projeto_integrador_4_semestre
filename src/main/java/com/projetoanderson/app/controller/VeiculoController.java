@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 
-import com.projetoanderson.app.model.dto.VeiculoCreateDTO;
-import com.projetoanderson.app.model.dto.VeiculoResponseDto;
+import com.projetoanderson.app.model.dto.VeiculoRequestDTO;
+import com.projetoanderson.app.model.dto.VeiculoResponseDTO;
 import com.projetoanderson.app.service.VeiculoService;
 
 @RestController
@@ -24,7 +24,7 @@ public class VeiculoController {
     }
     
     @PostMapping("/create")
-    public ResponseEntity<VeiculoResponseDto> create(@Valid @RequestBody VeiculoCreateDTO data) {
+    public ResponseEntity<VeiculoResponseDTO> create(@Valid @RequestBody VeiculoRequestDTO data) {
         return ResponseEntity.status(HttpStatus.CREATED).body(veiculoService.create(data));
     }
 }

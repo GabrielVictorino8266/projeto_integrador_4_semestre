@@ -84,7 +84,7 @@ public class Veiculo {
     }
 
     public void setPlaca(String placa) {
-        this.placa = placa.toUpperCase();
+        this.placa = placa != null ? placa.toUpperCase() : null;
     }
 
     public TipoVeiculo getTipoVeiculo() {

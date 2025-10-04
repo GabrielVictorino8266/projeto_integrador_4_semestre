@@ -17,7 +17,7 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class VeiculoCreateDTOTest {
+class VeiculoRequestDTOTest {
 
     private Validator validator;
 
@@ -27,8 +27,8 @@ class VeiculoCreateDTOTest {
         validator = factory.getValidator();
     }
 
-    private VeiculoCreateDTO createValidDTO() {
-        VeiculoCreateDTO dto = new VeiculoCreateDTO();
+    private VeiculoRequestDTO createValidDTO() {
+        VeiculoRequestDTO dto = new VeiculoRequestDTO();
         dto.setNumeroVeiculo("ABC123");
         dto.setPlaca("ABC1234");
         dto.setTipoVeiculo("CARRO");
@@ -45,17 +45,17 @@ class VeiculoCreateDTOTest {
 
     @Test
     void testNumeroVeiculo_QuandoValorValido_DevePassar() {
-        VeiculoCreateDTO dto = createValidDTO();
+        VeiculoRequestDTO dto = createValidDTO();
         dto.setNumeroVeiculo("ABC123");
-        Set<ConstraintViolation<VeiculoCreateDTO>> violations = validator.validate(dto);
+        Set<ConstraintViolation<VeiculoRequestDTO>> violations = validator.validate(dto);
         assertThat(violations).isEmpty();
     }
 
     @Test
     void testNumeroVeiculo_QuandoTamanhoMaximo_DevePassar() {
-        VeiculoCreateDTO dto = createValidDTO();
+        VeiculoRequestDTO dto = createValidDTO();
         dto.setNumeroVeiculo("1234567890"); // exatamente 10 caracteres
-        Set<ConstraintViolation<VeiculoCreateDTO>> violations = validator.validate(dto);
+        Set<ConstraintViolation<VeiculoRequestDTO>> violations = validator.validate(dto);
         assertThat(violations).isEmpty();
     }
 
@@ -63,9 +63,9 @@ class VeiculoCreateDTOTest {
     @MethodSource("numeroVeiculoInvalido")
     @Description("Deve falhar quando o numero do veículo for inválido")
     void testNumeroVeiculo_QuandoInvalido_DeveFalhar(String valor, String descricao) {
-        VeiculoCreateDTO dto = createValidDTO();
+        VeiculoRequestDTO dto = createValidDTO();
         dto.setNumeroVeiculo(valor);
-        Set<ConstraintViolation<VeiculoCreateDTO>> violations = validator.validate(dto);
+        Set<ConstraintViolation<VeiculoRequestDTO>> violations = validator.validate(dto);
         assertThat(violations).isNotEmpty();
     }
 
@@ -84,17 +84,17 @@ class VeiculoCreateDTOTest {
 
     @Test
     void testPlaca_QuandoFormatoAntigoValido_DevePassar() {
-        VeiculoCreateDTO dto = createValidDTO();
+        VeiculoRequestDTO dto = createValidDTO();
         dto.setPlaca("ABC1234"); // formato antigo
-        Set<ConstraintViolation<VeiculoCreateDTO>> violations = validator.validate(dto);
+        Set<ConstraintViolation<VeiculoRequestDTO>> violations = validator.validate(dto);
         assertThat(violations).isEmpty();
     }
 
     @Test
     void testPlaca_QuandoFormatoMercosulValido_DevePassar() {
-        VeiculoCreateDTO dto = createValidDTO();
+        VeiculoRequestDTO dto = createValidDTO();
         dto.setPlaca("ABC1A23"); // formato Mercosul
-        Set<ConstraintViolation<VeiculoCreateDTO>> violations = validator.validate(dto);
+        Set<ConstraintViolation<VeiculoRequestDTO>> violations = validator.validate(dto);
         assertThat(violations).isEmpty();
     }
 
@@ -102,9 +102,9 @@ class VeiculoCreateDTOTest {
     @MethodSource("placaInvalida")
     @Description("Deve falhar quando a placa for inválida")
     void testPlaca_QuandoInvalido_DeveFalhar(String valor, String descricao) {
-        VeiculoCreateDTO dto = createValidDTO();
+        VeiculoRequestDTO dto = createValidDTO();
         dto.setPlaca(valor);
-        Set<ConstraintViolation<VeiculoCreateDTO>> violations = validator.validate(dto);
+        Set<ConstraintViolation<VeiculoRequestDTO>> violations = validator.validate(dto);
         assertThat(violations).isNotEmpty();
     }
 
@@ -125,9 +125,9 @@ class VeiculoCreateDTOTest {
 
     @Test
     void testTipoVeiculo_QuandoValorValidoEnum_DevePassar() {
-        VeiculoCreateDTO dto = createValidDTO();
+        VeiculoRequestDTO dto = createValidDTO();
         dto.setTipoVeiculo("CARRO"); // valor válido do enum
-        Set<ConstraintViolation<VeiculoCreateDTO>> violations = validator.validate(dto);
+        Set<ConstraintViolation<VeiculoRequestDTO>> violations = validator.validate(dto);
         assertThat(violations).isEmpty();
     }
 
@@ -135,9 +135,9 @@ class VeiculoCreateDTOTest {
     @MethodSource("tipoVeiculoInvalido")
     @Description("Deve falhar quando o tipo de veículo for inválido")
     void testTipoVeiculo_QuandoInvalido_DeveFalhar(String valor, String descricao) {
-        VeiculoCreateDTO dto = createValidDTO();
+        VeiculoRequestDTO dto = createValidDTO();
         dto.setTipoVeiculo(valor);
-        Set<ConstraintViolation<VeiculoCreateDTO>> violations = validator.validate(dto);
+        Set<ConstraintViolation<VeiculoRequestDTO>> violations = validator.validate(dto);
         assertThat(violations).isNotEmpty();
     }
 
@@ -155,18 +155,18 @@ class VeiculoCreateDTOTest {
 
     @Test
     void testAnoFabricacao_QuandoAnoMinimo_DevePassar() {
-        VeiculoCreateDTO dto = createValidDTO();
+        VeiculoRequestDTO dto = createValidDTO();
         dto.setAnoFabricacao(1900); // valor mínimo aceito
-        Set<ConstraintViolation<VeiculoCreateDTO>> violations = validator.validate(dto);
+        Set<ConstraintViolation<VeiculoRequestDTO>> violations = validator.validate(dto);
         assertThat(violations).isEmpty();
     }
 
     @Test
     void testAnoFabricacao_QuandoAnoAtual_DevePassar() {
         int anoAtual = Year.now().getValue();
-        VeiculoCreateDTO dto = createValidDTO();
+        VeiculoRequestDTO dto = createValidDTO();
         dto.setAnoFabricacao(anoAtual); // ano atual
-        Set<ConstraintViolation<VeiculoCreateDTO>> violations = validator.validate(dto);
+        Set<ConstraintViolation<VeiculoRequestDTO>> violations = validator.validate(dto);
         assertThat(violations).isEmpty();
     }
 
@@ -174,9 +174,9 @@ class VeiculoCreateDTOTest {
     @MethodSource("anoFabricacaoInvalido")
     @Description("Deve falhar quando o ano de fabricação for inválido")
     void testAnoFabricacao_QuandoInvalido_DeveFalhar(Integer valor, String descricao) {
-        VeiculoCreateDTO dto = createValidDTO();
+        VeiculoRequestDTO dto = createValidDTO();
         dto.setAnoFabricacao(valor);
-        Set<ConstraintViolation<VeiculoCreateDTO>> violations = validator.validate(dto);
+        Set<ConstraintViolation<VeiculoRequestDTO>> violations = validator.validate(dto);
         assertThat(violations).isNotEmpty();
     }
 

@@ -1,232 +1,325 @@
 package com.projetoanderson.app.model.entity;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
-
 import com.projetoanderson.app.model.entity.enums.StatusVeiculo;
 import com.projetoanderson.app.model.entity.enums.TipoVeiculo;
-
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+import jdk.jfr.Description;
 
 import java.time.LocalDateTime;
-import java.time.Year;
 import java.util.Set;
+import java.util.stream.Stream;
 
-@DisplayName("Testes da Entidade Veiculo")
+import static org.assertj.core.api.Assertions.assertThat;
+
 class VeiculoTest {
 
-    private Validator validator;
+    private static Validator validator;
 
-    @BeforeEach
-    void configurarTeste() {
+    @BeforeAll
+    static void setUp() {
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         validator = factory.getValidator();
     }
 
-    private Veiculo criarVeiculoValido() {
-        Veiculo v = new Veiculo();
-        v.setNumeroVeiculo("V001");
-        v.setPlaca("ABC1D23");
-        v.setTipoVeiculo(TipoVeiculo.CARRO);
-        v.setAnoFabricacao(2020);
-        v.setMarca("Toyota");
-        v.setKmAtual(50000);
-        v.setLimiteAvisoKm(80000);
-        v.setCriadoPor("admin");
-        return v;
+    private Veiculo createValidVeiculo() {
+        Veiculo veiculo = new Veiculo();
+        veiculo.setNumeroVeiculo("V001");
+        veiculo.setPlaca("ABC1234");
+        veiculo.setTipoVeiculo(TipoVeiculo.CAMINHAO);
+        veiculo.setAnoFabricacao(2020);
+        veiculo.setMarca("Volvo");
+        veiculo.setKmAtual(50000);
+        veiculo.setLimiteAvisoKm(80000);
+        veiculo.setStatus(StatusVeiculo.ATIVO);
+        return veiculo;
     }
 
-    private void assertSemViolacoes(Veiculo v) {
-        Set<ConstraintViolation<Veiculo>> violations = validator.validate(v);
-        assertTrue(violations.isEmpty(),
-                () -> "Esperava nenhum erro de validação, mas ocorreu: " + violations);
+    // ==========================
+    // numeroVeiculo
+    // ==========================
+
+    @Test
+    void testNumeroVeiculo_QuandoValorValido_DevePassar() {
+        Veiculo veiculo = createValidVeiculo();
+        veiculo.setNumeroVeiculo("ABC123");
+        Set<ConstraintViolation<Veiculo>> violations = validator.validate(veiculo);
+        assertThat(violations).isEmpty();
     }
 
-    private void assertViolacao(Veiculo v, String campoEsperado) {
-        Set<ConstraintViolation<Veiculo>> violations = validator.validate(v);
-        assertFalse(violations.isEmpty(), "Esperava pelo menos uma violação");
-        assertTrue(violations.stream().anyMatch(vio ->
-                        vio.getPropertyPath().toString().equals(campoEsperado)),
-                () -> "Esperava violação no campo: " + campoEsperado);
+    @Test
+    void testNumeroVeiculo_QuandoTamanhoMaximo_DevePassar() {
+        Veiculo veiculo = createValidVeiculo();
+        veiculo.setNumeroVeiculo("1234567890");
+        Set<ConstraintViolation<Veiculo>> violations = validator.validate(veiculo);
+        assertThat(violations).isEmpty();
     }
 
-    @Test @DisplayName("Deve criar veículo com valores válidos")
-    void devecriarVeiculoComValoresValidos() {
-        assertSemViolacoes(criarVeiculoValido());
+    @ParameterizedTest(name = "{1}")
+    @MethodSource("numeroVeiculoInvalido")
+    @Description("Deve falhar quando o numero do veículo for inválido")
+    void testNumeroVeiculo_QuandoInvalido_DeveFalhar(String valor, String descricao) {
+        Veiculo veiculo = createValidVeiculo();
+        veiculo.setNumeroVeiculo(valor);
+        Set<ConstraintViolation<Veiculo>> violations = validator.validate(veiculo);
+        assertThat(violations).isNotEmpty();
     }
 
-    @Test @DisplayName("Deve converter placa para maiúsculo")
-    void deveConverterPlacaParaMaiusculo() {
-        Veiculo v = criarVeiculoValido();
-        v.setPlaca("abc1234");
-        assertEquals("ABC1234", v.getPlaca());
+    private static Stream<Arguments> numeroVeiculoInvalido() {
+        return Stream.of(
+                Arguments.of(null, "null não permitido"),
+                Arguments.of("", "string vazia"),
+                Arguments.of("   ", "apenas espaços"),
+                Arguments.of("12345678901", "acima de 10 caracteres")
+        );
     }
 
-    @Test @DisplayName("Deve inicializar com status ATIVO por padrão")
-    void deveInicializarComStatusAtivoPorPadrao() {
-        Veiculo v = new Veiculo();
-        assertEquals(StatusVeiculo.ATIVO, v.getStatus());
+    // ==========================
+    // placa
+    // ==========================
+
+    @Test
+    void testPlaca_QuandoValorValido_DevePassar() {
+        Veiculo veiculo = createValidVeiculo();
+        veiculo.setPlaca("XYZ9876");
+        Set<ConstraintViolation<Veiculo>> violations = validator.validate(veiculo);
+        assertThat(violations).isEmpty();
     }
 
-    @Test @DisplayName("Deve inicializar com data de criação")
-    void deveInicializarComDataDeCriacao() {
-        Veiculo v = new Veiculo();
-        assertNotNull(v.getCriadoEm());
+    @Test
+    void testPlaca_QuandoTamanhoMaximo_DevePassar() {
+        Veiculo veiculo = createValidVeiculo();
+        veiculo.setPlaca("ABC12345");
+        Set<ConstraintViolation<Veiculo>> violations = validator.validate(veiculo);
+        assertThat(violations).isEmpty();
     }
 
-    @Test @DisplayName("Deve falhar com número do veículo vazio")
-    void deveFalharComNumeroDoVeiculoVazio() {
-        Veiculo v = criarVeiculoValido();
-        v.setNumeroVeiculo("");
-        assertViolacao(v, "numeroVeiculo");
+    @Test
+    void testPlaca_QuandoMinuscula_DeveConverterParaMaiuscula() {
+        Veiculo veiculo = createValidVeiculo();
+        veiculo.setPlaca("abc1234");
+        assertThat(veiculo.getPlaca()).isEqualTo("ABC1234");
     }
 
-    @Test @DisplayName("Deve falhar com placa inválida")
-    void deveFalharComPlacaInvalida() {
-        Veiculo v = criarVeiculoValido();
-        v.setPlaca("123INVALIDA");
-        assertViolacao(v, "placa");
+    @ParameterizedTest(name = "{1}")
+    @MethodSource("placaInvalida")
+    @Description("Deve falhar quando a placa for inválida")
+    void testPlaca_QuandoInvalida_DeveFalhar(String valor, String descricao) {
+        Veiculo veiculo = createValidVeiculo();
+        veiculo.setPlaca(valor);
+        Set<ConstraintViolation<Veiculo>> violations = validator.validate(veiculo);
+        assertThat(violations).isNotEmpty();
     }
 
-    @Test @DisplayName("Deve falhar com ano de fabricação muito antigo")
-    void deveFalharComAnoDeFabricacaoMuitoAntigo() {
-        Veiculo v = criarVeiculoValido();
-        v.setAnoFabricacao(1800);
-        assertViolacao(v, "anoFabricacao");
+    private static Stream<Arguments> placaInvalida() {
+        return Stream.of(
+                Arguments.of(null, "null não permitido"),
+                Arguments.of("", "string vazia"),
+                Arguments.of("   ", "apenas espaços"),
+                Arguments.of("ABC123456", "acima de 8 caracteres")
+        );
     }
 
-    @Test @DisplayName("Deve falhar com KM atual negativo")
-    void deveFalharComKmAtualNegativo() {
-        Veiculo v = criarVeiculoValido();
-        v.setKmAtual(-10);
-        assertViolacao(v, "kmAtual");
+    // ==========================
+    // tipoVeiculo
+    // ==========================
+
+    @Test
+    void testTipoVeiculo_QuandoValorValido_DevePassar() {
+        Veiculo veiculo = createValidVeiculo();
+        veiculo.setTipoVeiculo(TipoVeiculo.CAMINHAO);
+        Set<ConstraintViolation<Veiculo>> violations = validator.validate(veiculo);
+        assertThat(violations).isEmpty();
     }
 
-    @Test @DisplayName("Deve aceitar placas no formato Mercosul")
-    void deveAceitarPlacasNoFormatoMercosul() {
-        Veiculo v = criarVeiculoValido();
-        v.setPlaca("BRA2E19");
-        assertSemViolacoes(v);
+    @Test
+    void testTipoVeiculo_QuandoNull_DeveFalhar() {
+        Veiculo veiculo = createValidVeiculo();
+        veiculo.setTipoVeiculo(null);
+        Set<ConstraintViolation<Veiculo>> violations = validator.validate(veiculo);
+        assertThat(violations).isNotEmpty();
     }
 
-    @Test @DisplayName("Deve aceitar placas no formato antigo")
-    void deveAceitarPlacasNoFormatoAntigo() {
-        Veiculo v = criarVeiculoValido();
-        v.setPlaca("ABC1234");
-        assertSemViolacoes(v);
+    // ==========================
+    // anoFabricacao
+    // ==========================
+
+    @Test
+    void testAnoFabricacao_QuandoValorValido_DevePassar() {
+        Veiculo veiculo = createValidVeiculo();
+        veiculo.setAnoFabricacao(2023);
+        Set<ConstraintViolation<Veiculo>> violations = validator.validate(veiculo);
+        assertThat(violations).isEmpty();
     }
 
-    @Test @DisplayName("Deve definir e obter campos de auditoria corretamente")
-    void deveDefinirEObterCamposDeAuditoriaCorretamente() {
-        Veiculo v = criarVeiculoValido();
+    @Test
+    void testAnoFabricacao_QuandoNull_DeveFalhar() {
+        Veiculo veiculo = createValidVeiculo();
+        veiculo.setAnoFabricacao(null);
+        Set<ConstraintViolation<Veiculo>> violations = validator.validate(veiculo);
+        assertThat(violations).isNotEmpty();
+    }
+
+    // ==========================
+    // marca
+    // ==========================
+
+    @Test
+    void testMarca_QuandoValorValido_DevePassar() {
+        Veiculo veiculo = createValidVeiculo();
+        veiculo.setMarca("Mercedes");
+        Set<ConstraintViolation<Veiculo>> violations = validator.validate(veiculo);
+        assertThat(violations).isEmpty();
+    }
+
+    @Test
+    void testMarca_QuandoTamanhoMaximo_DevePassar() {
+        Veiculo veiculo = createValidVeiculo();
+        veiculo.setMarca("12345678901234567890");
+        Set<ConstraintViolation<Veiculo>> violations = validator.validate(veiculo);
+        assertThat(violations).isEmpty();
+    }
+
+    @ParameterizedTest(name = "{1}")
+    @MethodSource("marcaInvalida")
+    @Description("Deve falhar quando a marca for inválida")
+    void testMarca_QuandoInvalida_DeveFalhar(String valor, String descricao) {
+        Veiculo veiculo = createValidVeiculo();
+        veiculo.setMarca(valor);
+        Set<ConstraintViolation<Veiculo>> violations = validator.validate(veiculo);
+        assertThat(violations).isNotEmpty();
+    }
+
+    private static Stream<Arguments> marcaInvalida() {
+        return Stream.of(
+                Arguments.of(null, "null não permitido"),
+                Arguments.of("", "string vazia"),
+                Arguments.of("   ", "apenas espaços"),
+                Arguments.of("123456789012345678901", "acima de 20 caracteres")
+        );
+    }
+
+    // ==========================
+    // kmAtual
+    // ==========================
+
+    @Test
+    void testKmAtual_QuandoValorValido_DevePassar() {
+        Veiculo veiculo = createValidVeiculo();
+        veiculo.setKmAtual(100000);
+        Set<ConstraintViolation<Veiculo>> violations = validator.validate(veiculo);
+        assertThat(violations).isEmpty();
+    }
+
+    @Test
+    void testKmAtual_QuandoNull_DeveFalhar() {
+        Veiculo veiculo = createValidVeiculo();
+        veiculo.setKmAtual(null);
+        Set<ConstraintViolation<Veiculo>> violations = validator.validate(veiculo);
+        assertThat(violations).isNotEmpty();
+    }
+
+    // ==========================
+    // limiteAvisoKm
+    // ==========================
+
+    @Test
+    void testLimiteAvisoKm_QuandoValorValido_DevePassar() {
+        Veiculo veiculo = createValidVeiculo();
+        veiculo.setLimiteAvisoKm(150000);
+        Set<ConstraintViolation<Veiculo>> violations = validator.validate(veiculo);
+        assertThat(violations).isEmpty();
+    }
+
+    @Test
+    void testLimiteAvisoKm_QuandoNull_DeveFalhar() {
+        Veiculo veiculo = createValidVeiculo();
+        veiculo.setLimiteAvisoKm(null);
+        Set<ConstraintViolation<Veiculo>> violations = validator.validate(veiculo);
+        assertThat(violations).isNotEmpty();
+    }
+
+    // ==========================
+    // status
+    // ==========================
+
+    @Test
+    void testStatus_QuandoValorValido_DevePassar() {
+        Veiculo veiculo = createValidVeiculo();
+        veiculo.setStatus(StatusVeiculo.INDISPONIVEL);
+        Set<ConstraintViolation<Veiculo>> violations = validator.validate(veiculo);
+        assertThat(violations).isEmpty();
+    }
+
+    @Test
+    void testStatus_QuandoNull_DeveFalhar() {
+        Veiculo veiculo = createValidVeiculo();
+        veiculo.setStatus(null);
+        Set<ConstraintViolation<Veiculo>> violations = validator.validate(veiculo);
+        assertThat(violations).isNotEmpty();
+    }
+
+    @Test
+    void testStatus_QuandoNaoDefinido_DeveSerAtivo() {
+        Veiculo veiculo = new Veiculo();
+        assertThat(veiculo.getStatus()).isEqualTo(StatusVeiculo.ATIVO);
+    }
+
+    // ==========================
+    // Campos de auditoria
+    // ==========================
+
+    @Test
+    void testCriadoEm_QuandoNaoDefinido_DeveSerDataAtual() {
+        Veiculo veiculo = new Veiculo();
+        assertThat(veiculo.getCriadoEm()).isNotNull();
+        assertThat(veiculo.getCriadoEm()).isBefore(LocalDateTime.now().plusSeconds(1));
+    }
+
+    @Test
+    void testCriadoPor_QuandoDefinido_DeveRetornarValor() {
+        Veiculo veiculo = createValidVeiculo();
+        veiculo.setCriadoPor("admin");
+        assertThat(veiculo.getCriadoPor()).isEqualTo("admin");
+    }
+
+    @Test
+    void testAtualizadoEm_QuandoDefinido_DeveRetornarValor() {
+        Veiculo veiculo = createValidVeiculo();
         LocalDateTime agora = LocalDateTime.now();
-        v.setCriadoPor("teste");
-        v.setCriadoEm(agora);
-        v.setAtualizadoPor("teste2");
-        v.setAtualizadoEm(agora);
-
-        assertEquals("teste", v.getCriadoPor());
-        assertEquals(agora, v.getCriadoEm());
-        assertEquals("teste2", v.getAtualizadoPor());
-        assertEquals(agora, v.getAtualizadoEm());
+        veiculo.setAtualizadoEm(agora);
+        assertThat(veiculo.getAtualizadoEm()).isEqualTo(agora);
     }
 
-    @Test @DisplayName("Deve alterar status do veículo")
-    void deveAlterarStatusDoVeiculo() {
-        Veiculo v = criarVeiculoValido();
-        v.setStatus(StatusVeiculo.INDISPONIVEL);
-        assertEquals(StatusVeiculo.INDISPONIVEL, v.getStatus());
+    @Test
+    void testAtualizadoPor_QuandoDefinido_DeveRetornarValor() {
+        Veiculo veiculo = createValidVeiculo();
+        veiculo.setAtualizadoPor("user123");
+        assertThat(veiculo.getAtualizadoPor()).isEqualTo("user123");
     }
 
-    @Test @DisplayName("Deve aceitar KM atual zero")
-    void deveAceitarKmAtualZero() {
-        Veiculo v = criarVeiculoValido();
-        v.setKmAtual(0);
-        assertSemViolacoes(v);
+    @Test
+    void testExcluidoPor_QuandoDefinido_DeveRetornarValor() {
+        Veiculo veiculo = createValidVeiculo();
+        veiculo.setExcluidoPor("admin");
+        assertThat(veiculo.getExcluidoPor()).isEqualTo("admin");
     }
 
-    @Test @DisplayName("Deve falhar com limite aviso KM negativo")
-    void deveFalharComLimiteAvisoKmNegativo() {
-        Veiculo v = criarVeiculoValido();
-        v.setLimiteAvisoKm(-1);
-        assertViolacao(v, "limiteAvisoKm");
-    }
+    // ==========================
+    // Validação completa
+    // ==========================
 
-    @Test @DisplayName("Deve aceitar limite aviso KM zero")
-    void deveAceitarLimiteAvisoKmZero() {
-        Veiculo v = criarVeiculoValido();
-        v.setLimiteAvisoKm(0);
-        assertSemViolacoes(v);
-    }
-
-    @Test @DisplayName("Deve aceitar ano de fabricação mínimo (1900)")
-    void deveAceitarAnoFabricacaoMinimo() {
-        Veiculo v = criarVeiculoValido();
-        v.setAnoFabricacao(1900);
-        assertSemViolacoes(v);
-    }
-
-    @Test @DisplayName("Deve aceitar ano de fabricação atual")
-    void deveAceitarAnoFabricacaoAtual() {
-        Veiculo v = criarVeiculoValido();
-        v.setAnoFabricacao(Year.now().getValue());
-        assertSemViolacoes(v);
-    }
-
-    @Test @DisplayName("Deve falhar com marca muito longa")
-    void deveFalharComMarcaMuitoLonga() {
-        Veiculo v = criarVeiculoValido();
-        v.setMarca("X".repeat(21));
-        assertViolacao(v, "marca");
-    }
-
-    @Test @DisplayName("Deve aceitar marca com tamanho máximo")
-    void deveAceitarMarcaComTamanhoMaximo() {
-        Veiculo v = criarVeiculoValido();
-        v.setMarca("X".repeat(20));
-        assertSemViolacoes(v);
-    }
-
-    @Test @DisplayName("Deve falhar com número veículo muito longo")
-    void deveFalharComNumeroVeiculoMuitoLongo() {
-        Veiculo v = criarVeiculoValido();
-        v.setNumeroVeiculo("X".repeat(11));
-        assertViolacao(v, "numeroVeiculo");
-    }
-
-    @Test @DisplayName("Deve aceitar número veículo com tamanho máximo")
-    void deveAceitarNumeroVeiculoComTamanhoMaximo() {
-        Veiculo v = criarVeiculoValido();
-        v.setNumeroVeiculo("X".repeat(10));
-        assertSemViolacoes(v);
-    }
-
-    @Test @DisplayName("Deve falhar com todos os campos obrigatórios nulos")
-    void deveFalharComTodosCamposObrigatoriosNulos() {
-        Veiculo v = new Veiculo();
-        Set<ConstraintViolation<Veiculo>> violations = validator.validate(v);
-        assertFalse(violations.isEmpty());
-    }
-
-    @Test @DisplayName("Deve falhar com tipo veículo nulo")
-    void deveFalharComTipoVeiculoNulo() {
-        Veiculo v = criarVeiculoValido();
-        v.setTipoVeiculo(null);
-        assertViolacao(v, "tipoVeiculo");
-    }
-
-    @Test @DisplayName("Deve aceitar diferentes tipos de veículo")
-    void deveAceitarDiferentesTiposDeVeiculo() {
-        Veiculo v = criarVeiculoValido();
-        for (TipoVeiculo tipo : TipoVeiculo.values()) {
-            v.setTipoVeiculo(tipo);
-            assertSemViolacoes(v);
-        }
+    @Test
+    void testVeiculo_QuandoTodosCamposValidos_DevePassar() {
+        Veiculo veiculo = createValidVeiculo();
+        Set<ConstraintViolation<Veiculo>> violations = validator.validate(veiculo);
+        assertThat(violations).isEmpty();
     }
 }
