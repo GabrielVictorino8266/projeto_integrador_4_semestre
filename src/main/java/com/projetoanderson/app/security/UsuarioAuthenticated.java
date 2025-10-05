@@ -1,38 +1,37 @@
 package com.projetoanderson.app.security;
 
 import java.util.Collection;
-import java.util.List;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import com.projetoanderson.app.model.entity.User;
+import com.projetoanderson.app.model.entity.Usuario;
 
 
-public class UserAuthenticated implements UserDetails{
+public class UsuarioAuthenticated implements UserDetails{
 
 	private static final long serialVersionUID = 3233335824584300651L;
 	
-	private final User user;
+	private final Usuario user;
 	
 
-	public UserAuthenticated(User user) {
+	public UsuarioAuthenticated(Usuario user) {
 		this.user = user;
 	}
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		return List.of(() -> "read");
+		return this.user.getFuncoes();
 	}
 
 	@Override
 	public String getPassword() {
-		return user.getPassword();
+		return user.getSenha();
 	}
 
 	@Override
 	public String getUsername() {
-		return user.getUsername();
+		return user.getCpf();
 	}
 	
 	@Override
@@ -52,7 +51,7 @@ public class UserAuthenticated implements UserDetails{
 	
 	@Override		
 	public boolean isEnabled() {
-		return true;
+		return this.user.isAtivo();
 	}
 
 }
