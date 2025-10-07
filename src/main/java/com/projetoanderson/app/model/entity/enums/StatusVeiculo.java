@@ -2,9 +2,9 @@ package com.projetoanderson.app.model.entity.enums;
 
 public enum StatusVeiculo {
 
-    ATIVO("active", "Ativo"),
+    ATIVO("ativo", "Ativo"),
     EXCLUIDO("excluido", "Excluído"),
-    MANUTENCAO("maintenance", "Manutenção"),
+    MANUTENCAO("manutencao", "Manutenção"),
     INDISPONIVEL("indisponivel", "Indisponível");
 
     private final String valor;
@@ -23,7 +23,7 @@ public enum StatusVeiculo {
         return descricao;
     }
 
-    public static StatusVeiculo fromValor(String valor) {
+    public static StatusVeiculo fromString(String valor) {
         for (StatusVeiculo s : StatusVeiculo.values()) {
             if (s.valor.equalsIgnoreCase(valor)) {
                 return s;

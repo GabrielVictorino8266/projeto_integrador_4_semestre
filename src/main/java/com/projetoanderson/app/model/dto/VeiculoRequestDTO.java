@@ -5,6 +5,7 @@ import jakarta.validation.constraints.*;
 import com.fasterxml.jackson.annotation.JsonAlias;
 
 import com.projetoanderson.app.model.entity.enums.TipoVeiculo;
+import com.projetoanderson.app.model.entity.enums.StatusVeiculo;
 import com.projetoanderson.app.validation.ValidEnum;
 
 public class VeiculoRequestDTO {
@@ -45,6 +46,10 @@ public class VeiculoRequestDTO {
     @Min(0)
     @JsonAlias({"warningKmLimit", "limiteAvisoKm"})
     private Integer limiteAvisoKm;
+
+    @ValidEnum(enumClass = StatusVeiculo.class, ignoreCase = true)
+    @JsonAlias({"status"})
+    private String status = StatusVeiculo.ATIVO.getValor();
     
     @AssertTrue(message = "O ano de fabricação não pode ser maior que o ano atual")
     private boolean isAnoFabricacaoValid() {
@@ -84,6 +89,10 @@ public class VeiculoRequestDTO {
         return limiteAvisoKm;
     }
 
+    public String getStatus() {
+        return status;
+    }
+
     // Setters
     
     public void setTipoVeiculo(String tipoVeiculo) {
@@ -114,4 +123,7 @@ public class VeiculoRequestDTO {
         this.limiteAvisoKm = limiteAvisoKm;
     }
 
+    public void setStatus(String status) {
+        this.status = status;
+    }
 }

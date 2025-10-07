@@ -3,14 +3,24 @@ package com.projetoanderson.app.service;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
+
 import com.projetoanderson.app.exception.PlacaDuplicadaException;
 import com.projetoanderson.app.exception.VeiculoNaoEncontradoException;
+import com.projetoanderson.app.exception.VeiculoJaExcluidoException;
 import com.projetoanderson.app.model.dto.VeiculoCreateDTO;
+import com.projetoanderson.app.model.dto.VeiculoFilterDTO;
 import com.projetoanderson.app.model.dto.VeiculoResponseDTO;
 import com.projetoanderson.app.model.dto.VeiculoUpdateDTO;
 import com.projetoanderson.app.model.entity.Veiculo;
 import com.projetoanderson.app.model.entity.enums.TipoVeiculo;
+import com.projetoanderson.app.model.entity.enums.StatusVeiculo;
 import com.projetoanderson.app.repository.VeiculoRepository;
+import com.projetoanderson.app.specification.VeiculoSpecification;
 
 @Service
 public class VeiculoService {
@@ -20,7 +30,39 @@ public class VeiculoService {
     public VeiculoService(VeiculoRepository veiculoRepository) {
         this.veiculoRepository = veiculoRepository;
     }
+
+    /**
+     * Busca um veículo por ID.
+     * 
+     * @param id ID do veículo a ser buscado.
+     * @return Resposta com o veículo encontrado.
+     * @throws VeiculoNaoEncontradoException Se o veículo não existir.
+     */
+    @Transactional(readOnly = true)
+    public VeiculoResponseDTO findById(Long id) {
+        return new VeiculoResponseDTO(
+            veiculoRepository.findById(id)
+                .orElseThrow(() -> new VeiculoNaoEncontradoException(
+                    String.format("Veículo com id %d não encontrado.", id)
+                )
+            )
+        );
+    }
     
+    /**
+     * Busca todos os veículos. 
+     * 
+     * @param filter Filtros para busca.
+     * @param pageable Paginação para busca.
+     * @return Lista de veículos.
+     */
+    @Transactional(readOnly = true)
+    public Page<VeiculoResponseDTO> findAll(VeiculoFilterDTO filter, Pageable pageable) {
+        Specification<Veiculo> spec = VeiculoSpecification.withFilters(filter);
+        
+        return veiculoRepository.findAll(spec, pageable)
+            .map(VeiculoResponseDTO::new);
+    }
 
     /**
      * Cria um veículo.
@@ -44,6 +86,7 @@ public class VeiculoService {
         veiculo.setMarca(dto.getMarca());
         veiculo.setKmAtual(dto.getKmAtual());
         veiculo.setLimiteAvisoKm(dto.getLimiteAvisoKm());
+        veiculo.setStatus(StatusVeiculo.fromString(dto.getStatus()));
         return new VeiculoResponseDTO(veiculoRepository.save(veiculo));
     }
 
@@ -58,9 +101,10 @@ public class VeiculoService {
      */
     @Transactional
     public VeiculoResponseDTO update(Long id, VeiculoUpdateDTO dto) {
-        Veiculo veiculo = veiculoRepository.findById(id).orElseThrow(() -> new VeiculoNaoEncontradoException(
-            String.format("Veículo com id %s não encontrado.", id)
-        ));
+        Veiculo veiculo = veiculoRepository.findById(id)
+            .orElseThrow(() -> new VeiculoNaoEncontradoException(
+                String.format("Veículo com id %d não encontrado.", id)
+            ));
 
         if (veiculoRepository.existsByPlacaAndIdNot(dto.getPlaca(), id)) {
             throw new PlacaDuplicadaException(
@@ -74,6 +118,29 @@ public class VeiculoService {
         veiculo.setMarca(dto.getMarca());
         veiculo.setKmAtual(dto.getKmAtual());
         veiculo.setLimiteAvisoKm(dto.getLimiteAvisoKm());
+        veiculo.setStatus(StatusVeiculo.fromString(dto.getStatus()));
         return new VeiculoResponseDTO(veiculoRepository.save(veiculo));
+    }
+
+    /**
+     * Deleta um veículo.
+     * 
+     * @param id ID do veículo a ser deletado.
+     * @throws VeiculoNaoEncontradoException Se o veículo não existir.
+     */
+    @Transactional
+    public void delete(Long id) {
+        Veiculo veiculo = veiculoRepository.findById(id)
+            .orElseThrow(() -> new VeiculoNaoEncontradoException(
+                String.format("Veículo com id %d não encontrado.", id)
+            ));
+        
+        if (veiculo.getStatus() == StatusVeiculo.EXCLUIDO) {
+            throw new VeiculoJaExcluidoException("Veículo já foi excluído.");
+        }
+        
+        veiculo.setStatus(StatusVeiculo.EXCLUIDO);
+        veiculo.setExcluidoEm(Instant.now());
+        // save() removed - @Transactional handles it
     }
 }
