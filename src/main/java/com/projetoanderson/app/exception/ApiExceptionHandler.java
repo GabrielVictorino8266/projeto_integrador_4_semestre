@@ -17,4 +17,9 @@ public class ApiExceptionHandler {
     public ResponseEntity<String> handleVeiculoNaoEncontrado(VeiculoNaoEncontradoException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
+
+    @ExceptionHandler(VeiculoJaExcluidoException.class)
+    public ResponseEntity<String> handleVeiculoJaExcluido(VeiculoJaExcluidoException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
+    }
 }
