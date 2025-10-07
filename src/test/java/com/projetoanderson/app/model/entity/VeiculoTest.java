@@ -13,7 +13,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import jdk.jfr.Description;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -280,7 +280,7 @@ class VeiculoTest {
     void testCriadoEm_QuandoNaoDefinido_DeveSerDataAtual() {
         Veiculo veiculo = new Veiculo();
         assertThat(veiculo.getCriadoEm()).isNotNull();
-        assertThat(veiculo.getCriadoEm()).isBefore(LocalDateTime.now().plusSeconds(1));
+        assertThat(veiculo.getCriadoEm()).isBefore(Instant.now().plusSeconds(1));
     }
 
     @Test
@@ -293,7 +293,7 @@ class VeiculoTest {
     @Test
     void testAtualizadoEm_QuandoDefinido_DeveRetornarValor() {
         Veiculo veiculo = createValidVeiculo();
-        LocalDateTime agora = LocalDateTime.now();
+        Instant agora = Instant.now();
         veiculo.setAtualizadoEm(agora);
         assertThat(veiculo.getAtualizadoEm()).isEqualTo(agora);
     }

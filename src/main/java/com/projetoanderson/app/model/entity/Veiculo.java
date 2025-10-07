@@ -2,7 +2,7 @@ package com.projetoanderson.app.model.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 import com.projetoanderson.app.model.entity.enums.StatusVeiculo;
 import com.projetoanderson.app.model.entity.enums.TipoVeiculo;
@@ -53,10 +53,13 @@ public class Veiculo {
     private StatusVeiculo status = StatusVeiculo.ATIVO;
 
     @Column(name = "criado_em", nullable = false, updatable = false)
-    private LocalDateTime criadoEm = LocalDateTime.now();
+    private Instant criadoEm = Instant.now();
 
     @Column(name = "atualizado_em")
-    private LocalDateTime atualizadoEm;
+    private Instant atualizadoEm;
+
+    @Column(name = "excluido_em")
+    private Instant excluidoEm;
 
     @Column(name = "criado_por", length = 50, updatable = false)
     private String criadoPor;
@@ -135,14 +138,14 @@ public class Veiculo {
         this.status = status;
     }
 
-    public LocalDateTime getCriadoEm() {
+    public Instant getCriadoEm() {
         return criadoEm;
     }
 
-    public void setCriadoEm(LocalDateTime criadoEm) {
+    public void setCriadoEm(Instant criadoEm) {
         this.criadoEm = criadoEm;
     }
-   
+
     public String getCriadoPor() {
         return criadoPor;
     }
@@ -151,11 +154,11 @@ public class Veiculo {
         this.criadoPor = criadoPor;
     }
 
-    public LocalDateTime getAtualizadoEm() {
+    public Instant getAtualizadoEm() {
         return atualizadoEm;
     }
 
-    public void setAtualizadoEm(LocalDateTime atualizadoEm) {
+    public void setAtualizadoEm(Instant atualizadoEm) {
         this.atualizadoEm = atualizadoEm;
     }
 
@@ -165,6 +168,14 @@ public class Veiculo {
 
     public void setAtualizadoPor(String atualizadoPor) {
         this.atualizadoPor = atualizadoPor;
+    }
+    
+    public Instant getExcluidoEm() {
+        return excluidoEm;
+    }
+
+    public void setExcluidoEm(Instant excluidoEm) {
+        this.excluidoEm = excluidoEm;
     }
 
     public String getExcluidoPor() {
