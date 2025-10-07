@@ -1,17 +1,19 @@
 package com.projetoanderson.app.model.dto;
 
 import com.projetoanderson.app.model.entity.Veiculo;
+import com.projetoanderson.app.model.entity.enums.StatusVeiculo;
 import com.projetoanderson.app.model.entity.enums.TipoVeiculo;
 
 public record VeiculoResponseDTO(
     Long id,
-    String numeroVeiculo,
-    String placa,
-    TipoVeiculo tipoVeiculo,
-    Integer anoFabricacao,
-    String marca,
-    Integer kmAtual,
-    Integer limiteAvisoKm
+    String vehicleNumber,
+    String licensePlate,
+    TipoVeiculo vehicleType,
+    Integer manufacturingYear,
+    String brand,
+    Integer currentKm,
+    Integer warningKmLimit,
+    StatusVeiculo status
 ) {
     public VeiculoResponseDTO(Veiculo veiculo) {
         this(
@@ -22,7 +24,8 @@ public record VeiculoResponseDTO(
             veiculo.getAnoFabricacao(),
             veiculo.getMarca(),
             veiculo.getKmAtual(),
-            veiculo.getLimiteAvisoKm()
+            veiculo.getLimiteAvisoKm(),
+            veiculo.getStatus()
         );
     }
 }
