@@ -11,7 +11,6 @@ import org.springframework.data.jpa.domain.Specification;
 
 import com.projetoanderson.app.exception.PlacaDuplicadaException;
 import com.projetoanderson.app.exception.VeiculoNaoEncontradoException;
-import com.projetoanderson.app.exception.VeiculoJaExcluidoException;
 import com.projetoanderson.app.model.dto.VeiculoCreateDTO;
 import com.projetoanderson.app.model.dto.VeiculoFilterDTO;
 import com.projetoanderson.app.model.dto.VeiculoResponseDTO;
@@ -136,7 +135,7 @@ public class VeiculoService {
             ));
         
         if (veiculo.getStatus() == StatusVeiculo.EXCLUIDO) {
-            throw new VeiculoJaExcluidoException("Veículo já foi excluído.");
+            throw new VeiculoNaoEncontradoException("Veículo já foi excluído.");
         }
         
         veiculo.setStatus(StatusVeiculo.EXCLUIDO);
