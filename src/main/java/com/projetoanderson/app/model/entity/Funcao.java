@@ -13,6 +13,9 @@ import jakarta.persistence.Table;
 @Table(name = "funcoes")
 public class Funcao implements GrantedAuthority {
 	private static final long serialVersionUID = -4693004502376613634L;
+	
+	public static final String ROLE_ADMIN = "ROLE_ADMIN";
+	public static final String ROLE_MOTORISTA = "ROLE_MOTORISTA";
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,11 +24,6 @@ public class Funcao implements GrantedAuthority {
 	@Column(name = "nome", nullable = false, unique = true, length = 50)
 	private String nome;
 
-	public static class Nomes {
-		public static final String ROLE_ADMIN = "ROLE_ADMIN";
-		public static final String ROLE_MOTORISTA = "ROLE_MOTORISTA";
-	}
-	
 	@Override
 	public String getAuthority() {
 		return this.nome;
@@ -47,7 +45,4 @@ public class Funcao implements GrantedAuthority {
 		this.nome = nome;
 	}
 
-	public static long getSerialversionuid() {
-		return serialVersionUID;
-	}
 }

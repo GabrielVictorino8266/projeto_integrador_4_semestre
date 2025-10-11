@@ -11,10 +11,9 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.MapsId;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
@@ -24,10 +23,9 @@ import jakarta.validation.constraints.NotBlank;
 
 @Entity
 @Table(name="perfis_motorista")
-public class PerfilMotorista {
+public class PerfilMotorista extends Auditoria {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
 	@Enumerated(EnumType.STRING)
@@ -35,7 +33,7 @@ public class PerfilMotorista {
 	private TipoCNH tipoCnh;
 	
 	@NotBlank(message = "O número da CNH é obrigatório.")
-	@Column(name="numero_cnh", nullable = false, unique = true, length=20)
+	@Column(name="numero_cnh", nullable = false, unique = true, length=11)
 	private String numeroCnh;
 	
 	@Min(value = 1, message = "Desempenho deve ser no mínimo 1.")
@@ -49,12 +47,12 @@ public class PerfilMotorista {
 		    orphanRemoval = true,
 		    fetch = FetchType.LAZY
 		)
-		private List<Incidente> incidentes = new ArrayList<>();
+	private List<Incidente> incidentes = new ArrayList<>();
 	
 	@OneToOne(fetch = FetchType.LAZY)
+	@MapsId
 	@JoinColumn(name="usuario_id", nullable = false, unique=true)
 	private Usuario usuario;
-	
 
 	public Long getId() {
 		return id;
@@ -88,15 +86,6 @@ public class PerfilMotorista {
 		this.desempenho = desempenho;
 	}
 
-
-	public Usuario getUsuario() {
-		return usuario;
-	}
-
-	public void setUsuario(Usuario usuario) {
-		this.usuario = usuario;
-	}
-
 	public List<Incidente> getIncidentes() {
 		return incidentes;
 	}
@@ -105,4 +94,12 @@ public class PerfilMotorista {
 		this.incidentes = incidentes;
 	}
 
+	public Usuario getUsuario() {
+		return usuario;
+	}
+
+	public void setUsuario(Usuario usuario) {
+		this.usuario = usuario;
+	}
+	
 }
