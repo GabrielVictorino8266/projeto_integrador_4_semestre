@@ -1,15 +1,31 @@
 package com.projetoanderson.app.model.entity;
 
-import jakarta.persistence.*;
-import jakarta.validation.constraints.*;
-import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.projetoanderson.app.model.entity.enums.StatusVeiculo;
 import com.projetoanderson.app.model.entity.enums.TipoVeiculo;
 
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+
 @Entity
 @Table(name = "veiculos")
-public class Veiculo {
+public class Veiculo extends Auditoria {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -51,139 +67,100 @@ public class Veiculo {
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false, length = 20)
     private StatusVeiculo status = StatusVeiculo.ATIVO;
-
-    @Column(name = "criado_em", nullable = false, updatable = false)
-    private Instant criadoEm = Instant.now();
-
-    @Column(name = "atualizado_em")
-    private Instant atualizadoEm;
-
-    @Column(name = "excluido_em")
-    private Instant excluidoEm;
-
-    @Column(name = "criado_por", length = 50, updatable = false)
-    private String criadoPor;
-
-    @Column(name = "atualizado_por", length = 50)
-    private String atualizadoPor;
-
-    @Column(name = "excluido_por", length = 50)
-    private String excluidoPor;
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getNumeroVeiculo() {
-        return numeroVeiculo;
-    }
-
-    public void setNumeroVeiculo(String numeroVeiculo) {
-        this.numeroVeiculo = numeroVeiculo;
-    }
-
-    public String getPlaca() {
-        return placa;
-    }
-
-    public void setPlaca(String placa) {
-        this.placa = placa != null ? placa.toUpperCase() : null;
-    }
-
-    public TipoVeiculo getTipoVeiculo() {
-        return tipoVeiculo;
-    }
-
-    public void setTipoVeiculo(TipoVeiculo tipoVeiculo) {
-        this.tipoVeiculo = tipoVeiculo;
-    }
-
-    public Integer getAnoFabricacao() {
-        return anoFabricacao;
-    }
-
-    public void setAnoFabricacao(Integer anoFabricacao) {
-        this.anoFabricacao = anoFabricacao;
-    }
-
-    public String getMarca() {
-        return marca;
-    }
-
-    public void setMarca(String marca) {
-        this.marca = marca;
-    }
-
-    public Integer getKmAtual() {
-        return kmAtual;
-    }
-
-    public void setKmAtual(Integer kmAtual) {
-        this.kmAtual = kmAtual;
-    }
-
-    public Integer getLimiteAvisoKm() {
-        return limiteAvisoKm;
-    }
-
-    public void setLimiteAvisoKm(Integer limiteAvisoKm) {
-        this.limiteAvisoKm = limiteAvisoKm;
-    }
-
-    public StatusVeiculo getStatus() {
-        return status;
-    }
-
-    public void setStatus(StatusVeiculo status) {
-        this.status = status;
-    }
-
-    public Instant getCriadoEm() {
-        return criadoEm;
-    }
-
-    public void setCriadoEm(Instant criadoEm) {
-        this.criadoEm = criadoEm;
-    }
-
-    public String getCriadoPor() {
-        return criadoPor;
-    }
-
-    public void setCriadoPor(String criadoPor) {
-        this.criadoPor = criadoPor;
-    }
-
-    public Instant getAtualizadoEm() {
-        return atualizadoEm;
-    }
-
-    public void setAtualizadoEm(Instant atualizadoEm) {
-        this.atualizadoEm = atualizadoEm;
-    }
-
-    public String getAtualizadoPor() {
-        return atualizadoPor;
-    }
-
-    public void setAtualizadoPor(String atualizadoPor) {
-        this.atualizadoPor = atualizadoPor;
-    }
     
-    public Instant getExcluidoEm() {
-        return excluidoEm;
-    }
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "empresa_id", nullable = false)
+    private Empresa empresa;
+    
+    @OneToMany(mappedBy = "veiculo", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<Manutencao> manutencoes = new ArrayList<>();
 
-    public void setExcluidoEm(Instant excluidoEm) {
-        this.excluidoEm = excluidoEm;
-    }
+	public Long getId() {
+		return id;
+	}
 
-    public String getExcluidoPor() {
-        return excluidoPor;
-    }
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-    public void setExcluidoPor(String excluidoPor) {
-        this.excluidoPor = excluidoPor;
-    }
+	public String getNumeroVeiculo() {
+		return numeroVeiculo;
+	}
+
+	public void setNumeroVeiculo(String numeroVeiculo) {
+		this.numeroVeiculo = numeroVeiculo;
+	}
+
+	public String getPlaca() {
+		return placa;
+	}
+
+	public void setPlaca(String placa) {
+		this.placa = placa;
+	}
+
+	public TipoVeiculo getTipoVeiculo() {
+		return tipoVeiculo;
+	}
+
+	public void setTipoVeiculo(TipoVeiculo tipoVeiculo) {
+		this.tipoVeiculo = tipoVeiculo;
+	}
+
+	public Integer getAnoFabricacao() {
+		return anoFabricacao;
+	}
+
+	public void setAnoFabricacao(Integer anoFabricacao) {
+		this.anoFabricacao = anoFabricacao;
+	}
+
+	public String getMarca() {
+		return marca;
+	}
+
+	public void setMarca(String marca) {
+		this.marca = marca;
+	}
+
+	public Integer getKmAtual() {
+		return kmAtual;
+	}
+
+	public void setKmAtual(Integer kmAtual) {
+		this.kmAtual = kmAtual;
+	}
+
+	public Integer getLimiteAvisoKm() {
+		return limiteAvisoKm;
+	}
+
+	public void setLimiteAvisoKm(Integer limiteAvisoKm) {
+		this.limiteAvisoKm = limiteAvisoKm;
+	}
+
+	public StatusVeiculo getStatus() {
+		return status;
+	}
+
+	public void setStatus(StatusVeiculo status) {
+		this.status = status;
+	}
+
+	public Empresa getEmpresa() {
+		return empresa;
+	}
+
+	public void setEmpresa(Empresa empresa) {
+		this.empresa = empresa;
+	}
+
+	public List<Manutencao> getManutencoes() {
+		return manutencoes;
+	}
+
+	public void setManutencoes(List<Manutencao> manutencoes) {
+		this.manutencoes = manutencoes;
+	}
     
 }

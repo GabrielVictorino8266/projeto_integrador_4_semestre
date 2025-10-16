@@ -1,0 +1,131 @@
+{
+	"info": {
+		"_postman_id": "2b2b2b2b-2b2b-4b2b-8b2b-2b2b2b2b2b2b",
+		"name": "2. Empresas",
+		"description": "Coleção para gerenciar os endpoints de Empresas. A autorização JWT é herdada para todas as requisições.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "GET Listar Todas as Empresas",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/empresas",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"empresas"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET Buscar Empresa por ID",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/empresas/1",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"empresas",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "POST Criar Empresa",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"razaoSocial\": \"Transportes Velozes LTDA\",\n  \"nomeFantasia\": \"Veloz Transportes\",\n  \"cnpj\": \"55443322000199\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/empresas",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"empresas"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PUT Atualizar Empresa",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"razaoSocial\": \"Logistica Express Global S.A.\",\n  \"nomeFantasia\": \"Express Log Global\",\n  \"cnpj\": \"98765432000111\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/empresas/2",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"empresas",
+						"2"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DELETE Deletar Empresa",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/empresas/4",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"empresas",
+						"4"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{jwt_token}}",
+				"type": "string"
+			}
+		]
+	}
+}

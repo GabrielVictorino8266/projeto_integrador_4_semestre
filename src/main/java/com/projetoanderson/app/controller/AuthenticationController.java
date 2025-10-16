@@ -34,7 +34,7 @@ public class AuthenticationController {
      * @return token JWT como String
      * 
      */
-    @PostMapping("/authenticate") // MELHORIA: Adicionar barra inicial
+    @PostMapping("/api/authenticate") // MELHORIA: Adicionar barra inicial
     public String authenticate(Authentication authentication){
         return authenticationService.authenticate(authentication);
     }

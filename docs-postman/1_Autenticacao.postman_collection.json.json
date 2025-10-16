@@ -1,0 +1,60 @@
+{
+	"info": {
+		"_postman_id": "1a1a1a1a-1a1a-4a1a-8a1a-1a1a1a1a1a1a",
+		"name": "1. Autenticação",
+		"description": "Use esta requisição para obter o Token JWT necessário para as outras coleções. O token será salvo automaticamente na variável de ambiente `jwt_token`.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "POST Authenticate",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const token = pm.response.text();",
+							"if (token) {",
+							"    pm.environment.set(\"jwt_token\", token);",
+							"    console.log(\"Token JWT salvo com sucesso!\");",
+							"} else {",
+							"    console.error(\"Não foi possível obter o token da resposta.\");",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "admin123",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "12345678901",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/authenticate",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"authenticate"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

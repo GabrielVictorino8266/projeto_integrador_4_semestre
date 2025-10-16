@@ -1,5 +1,6 @@
 package com.projetoanderson.app.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -24,4 +25,6 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
     boolean existsByCpf(String cpf);
     
     boolean existsByEmail(String email);
+    
+    List<Usuario> findByNomeContainingIgnoreCase(String nome);
 }
