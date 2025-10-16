@@ -1,0 +1,245 @@
+{
+	"info": {
+		"_postman_id": "4d4d4d4d-4d4d-4d4d-8d4d-mock-version",
+		"name": "4. Perfil Motorista",
+		"description": "Coleção para gerenciar os endpoints de Perfil de Motorista. A autorização JWT é herdada para todas as requisições. Contém respostas de exemplo (mocks) para habilitar o desenvolvimento frontend paralelo.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "POST Criar Perfil de Motorista",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"usuarioId\": 1,\n    \"tipoCnh\": \"B\",\n    \"numeroCnh\": \"12345678900\",\n    \"desempenho\": 9\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/perfis-motorista",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"perfis-motorista"
+					]
+				},
+				"description": "Cria um novo perfil de motorista para um usuário existente que ainda não tenha um. O `id` do perfil será o mesmo do `usuarioId`."
+			},
+			"response": [
+				{
+					"name": "Exemplo de Resposta de Sucesso",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"usuarioId\": 1,\n    \"tipoCnh\": \"B\",\n    \"numeroCnh\": \"12345678900\",\n    \"desempenho\": 9\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/perfis-motorista"
+						}
+					},
+					"status": "Created",
+					"code": 201,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"id\": 1,\n    \"tipoCnh\": \"B\",\n    \"numeroCnh\": \"12345678900\",\n    \"desempenho\": 9,\n    \"nomeMotorista\": \"João Silva\"\n}"
+				}
+			]
+		},
+		{
+			"name": "GET Listar Todos os Perfis",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/perfis-motorista",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"perfis-motorista"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Exemplo de Resposta de Sucesso",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/perfis-motorista"
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "[\n    {\n        \"id\": 2,\n        \"tipoCnh\": \"D\",\n        \"numeroCnh\": \"12345678901\",\n        \"desempenho\": 9,\n        \"nomeMotorista\": \"Carlos Santos\"\n    },\n    {\n        \"id\": 5,\n        \"tipoCnh\": \"C\",\n        \"numeroCnh\": \"23456789012\",\n        \"desempenho\": 10,\n        \"nomeMotorista\": \"Pedro Almeida\"\n    }\n]"
+				}
+			]
+		},
+		{
+			"name": "GET Buscar Perfil por ID",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/perfis-motorista/2",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"perfis-motorista",
+						"2"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Exemplo de Resposta de Sucesso",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/perfis-motorista/2"
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"id\": 2,\n    \"tipoCnh\": \"D\",\n    \"numeroCnh\": \"12345678901\",\n    \"desempenho\": 9,\n    \"nomeMotorista\": \"Carlos Santos\"\n}"
+				}
+			]
+		},
+		{
+			"name": "PUT Atualizar Perfil",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"usuarioId\": 1,\n    \"tipoCnh\": \"AB\",\n    \"numeroCnh\": \"12345678900\",\n    \"desempenho\": 10\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/perfis-motorista/1",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"perfis-motorista",
+						"1"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Exemplo de Resposta de Sucesso",
+					"originalRequest": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"usuarioId\": 1,\n    \"tipoCnh\": \"AB\",\n    \"numeroCnh\": \"12345678900\",\n    \"desempenho\": 10\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/perfis-motorista/1"
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"id\": 1,\n    \"tipoCnh\": \"AB\",\n    \"numeroCnh\": \"12345678900\",\n    \"desempenho\": 10,\n    \"nomeMotorista\": \"João Silva\"\n}"
+				}
+			]
+		},
+		{
+			"name": "DELETE Deletar Perfil",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/perfis-motorista/1",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"perfis-motorista",
+						"1"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Exemplo de Resposta de Sucesso",
+					"originalRequest": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/perfis-motorista/1"
+						}
+					},
+					"status": "No Content",
+					"code": 204,
+					"_postman_previewlanguage": "json",
+					"header": [],
+					"cookie": [],
+					"body": null
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{jwt_token}}",
+				"type": "string"
+			}
+		]
+	}
+}

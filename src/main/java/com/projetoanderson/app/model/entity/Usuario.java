@@ -78,9 +78,9 @@ public class Usuario extends Auditoria {
     	)
     private Set<Funcao> funcoes;
     
-    @OneToOne
-    @JoinColumn(name="id")
-    private PerfilMotorista perfilMotorista;
+
+	 @OneToOne(mappedBy = "usuario", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	 private PerfilMotorista perfilMotorista;
     
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name="empresa_id", nullable=false)

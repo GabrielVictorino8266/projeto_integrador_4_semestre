@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @since 2025-04-10
  */
 @RestController
-@RequestMapping("private")
+@RequestMapping("/api/private")
 public class PrivateController {
     
     /**

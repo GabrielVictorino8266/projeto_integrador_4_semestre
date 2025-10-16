@@ -1,0 +1,137 @@
+{
+	"info": {
+		"_postman_id": "3c3c3c3c-3c3c-4c3c-8c3c-3c3c3c3c3c3c",
+		"name": "3. Usuários",
+		"description": "Coleção para gerenciar os endpoints de Usuários. A autorização JWT é herdada para todas as requisições.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "GET Listar Todos os Usuários",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/usuarios",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"usuarios"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET Buscar Usuário por CPF",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/usuarios/buscar?cpf=12345678901",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"usuarios",
+						"buscar"
+					],
+					"query": [
+						{
+							"key": "cpf",
+							"value": "12345678901"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "POST Criar Usuário",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"nome\": \"Maria Souza\",\n    \"senha\": \"password123\",\n    \"cpf\": \"98765432100\",\n    \"email\": \"maria.souza@rapida.com.br\",\n    \"dataNascimento\": \"1995-10-20\",\n    \"telefone\": \"11912345678\",\n    \"empresa\": 1\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/usuarios",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"usuarios"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PUT Atualizar Usuário",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"nome\": \"Carlos Santos Silva\",\n    \"senha\": \"novaSenha456\",\n    \"cpf\": \"23456789012\",\n    \"email\": \"carlos.santos@rapida.com.br\",\n    \"dataNascimento\": \"1990-07-22\",\n    \"telefone\": \"11999998888\",\n    \"empresa\": 1\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/usuarios/2",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"usuarios",
+						"2"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DELETE Deletar Usuário",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/usuarios/3",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"usuarios",
+						"3"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{jwt_token}}",
+				"type": "string"
+			}
+		]
+	}
+}
