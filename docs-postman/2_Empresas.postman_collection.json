@@ -1,13 +1,13 @@
 {
 	"info": {
-		"_postman_id": "2b2b2b2b-2b2b-4b2b-8b2b-2b2b2b2b2b2b",
+		"_postman_id": "2b2b2b2b-2b2b-4b2b-8b2b-final-sep",
 		"name": "2. Empresas",
-		"description": "Coleção para gerenciar os endpoints de Empresas. A autorização JWT é herdada para todas as requisições.",
+		"description": "Coleção para gerenciar os endpoints de Empresas. A autorização JWT é herdada para todas as requisições. Contém respostas de exemplo (mocks).",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
 		{
-			"name": "GET Listar Todas as Empresas",
+			"name": "GET Listar Empresas (Retorna apenas a do usuário logado)",
 			"request": {
 				"method": "GET",
 				"header": [],
@@ -20,12 +20,35 @@
 						"api",
 						"empresas"
 					]
-				}
+				},
+				"description": "Valida a listagem da empresa do usuário logado."
 			},
-			"response": []
+			"response": [
+				{
+					"name": "Exemplo de Resposta de Sucesso",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/empresas"
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "[\n    {\n        \"id\": 1,\n        \"razaoSocial\": \"Transportadora Rápida Ltda\",\n        \"nomeFantasia\": \"Rápida Transportes\",\n        \"cnpj\": \"12345678000190\"\n    }\n]"
+				}
+			]
 		},
 		{
-			"name": "GET Buscar Empresa por ID",
+			"name": "GET Buscar Empresa por ID (Própria Empresa)",
 			"request": {
 				"method": "GET",
 				"header": [],
@@ -39,18 +62,41 @@
 						"empresas",
 						"1"
 					]
-				}
+				},
+				"description": "Valida a busca da empresa específica do usuário logado (ex: ID 1)."
 			},
-			"response": []
+			"response": [
+				{
+					"name": "Exemplo de Resposta de Sucesso",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/empresas/1"
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"id\": 1,\n    \"razaoSocial\": \"Transportadora Rápida Ltda\",\n    \"nomeFantasia\": \"Rápida Transportes\",\n    \"cnpj\": \"12345678000190\"\n}"
+				}
+			]
 		},
 		{
-			"name": "POST Criar Empresa",
+			"name": "[CLIENTE ADMIN] POST Criar Empresa (Espera 403)",
 			"request": {
 				"method": "POST",
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n  \"razaoSocial\": \"Transportes Velozes LTDA\",\n  \"nomeFantasia\": \"Veloz Transportes\",\n  \"cnpj\": \"55443322000199\"\n}",
+					"raw": "{\n  \"razaoSocial\": \"Nova Empresa Teste LTDA\",\n  \"nomeFantasia\": \"NET Transportes\",\n  \"cnpj\": \"11223344000155\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -66,18 +112,45 @@
 						"api",
 						"empresas"
 					]
-				}
+				},
+				"description": "Este endpoint agora é bloqueado para admins de clientes. Espera-se um 403 Forbidden. Use o endpoint [SUPER ADMIN] para criar empresas."
 			},
-			"response": []
+			"response": [
+				{
+					"name": "Exemplo de Resposta de Falha (Acesso Negado)",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"razaoSocial\": \"Nova Empresa Teste LTDA\",\n  \"nomeFantasia\": \"NET Transportes\",\n  \"cnpj\": \"11223344000155\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/empresas"
+						}
+					},
+					"status": "Forbidden",
+					"code": 403,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"timestamp\": \"2025-10-18T14:30:00.000+00:00\",\n    \"status\": 403,\n    \"error\": \"Forbidden\",\n    \"message\": \"Usuários não têm permissão para criar novas empresas.\",\n    \"path\": \"/api/empresas\"\n}"
+				}
+			]
 		},
 		{
-			"name": "PUT Atualizar Empresa",
+			"name": "[SUPER ADMIN] POST Criar Empresa",
 			"request": {
-				"method": "PUT",
+				"method": "POST",
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n  \"razaoSocial\": \"Logistica Express Global S.A.\",\n  \"nomeFantasia\": \"Express Log Global\",\n  \"cnpj\": \"98765432000111\"\n}",
+					"raw": "{\n  \"razaoSocial\": \"Cliente Novo LTDA\",\n  \"nomeFantasia\": \"Cliente Novo Transportes\",\n  \"cnpj\": \"33445566000177\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -85,37 +158,137 @@
 					}
 				},
 				"url": {
-					"raw": "{{baseUrl}}/api/empresas/2",
+					"raw": "{{baseUrl}}/api/admin/empresas",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"admin",
+						"empresas"
+					]
+				},
+				"description": "Cria uma nova empresa no sistema. Requer um token de usuário com `ROLE_SUPER_ADMIN`."
+			},
+			"response": [
+				{
+					"name": "Exemplo de Resposta de Sucesso (Super Admin)",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"razaoSocial\": \"Cliente Novo LTDA\",\n  \"nomeFantasia\": \"Cliente Novo Transportes\",\n  \"cnpj\": \"33445566000177\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/admin/empresas"
+						}
+					},
+					"status": "Created",
+					"code": 201,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"id\": 3,\n    \"razaoSocial\": \"Cliente Novo LTDA\",\n    \"nomeFantasia\": \"Cliente Novo Transportes\",\n    \"cnpj\": \"33445566000177\"\n}"
+				}
+			]
+		},
+		{
+			"name": "PUT Atualizar Empresa (Própria Empresa)",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"razaoSocial\": \"Transportadora Rápida Global Ltda\",\n  \"nomeFantasia\": \"Rápida Transportes Global\",\n  \"cnpj\": \"12345678000190\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/empresas/1",
 					"host": [
 						"{{baseUrl}}"
 					],
 					"path": [
 						"api",
 						"empresas",
-						"2"
+						"1"
 					]
-				}
+				},
+				"description": "Valida a atualização dos dados da própria empresa do usuário logado (ex: ID 1)."
 			},
-			"response": []
+			"response": [
+				{
+					"name": "Exemplo de Resposta de Sucesso",
+					"originalRequest": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"razaoSocial\": \"Transportadora Rápida Global Ltda\",\n  \"nomeFantasia\": \"Rápida Transportes Global\",\n  \"cnpj\": \"12345678000190\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/empresas/1"
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"id\": 1,\n    \"razaoSocial\": \"Transportadora Rápida Global Ltda\",\n    \"nomeFantasia\": \"Rápida Transportes Global\",\n    \"cnpj\": \"12345678000190\"\n}"
+				}
+			]
 		},
 		{
-			"name": "DELETE Deletar Empresa",
+			"name": "DELETE Deletar Empresa (Própria Empresa)",
 			"request": {
 				"method": "DELETE",
 				"header": [],
 				"url": {
-					"raw": "{{baseUrl}}/api/empresas/4",
+					"raw": "{{baseUrl}}/api/empresas/3",
 					"host": [
 						"{{baseUrl}}"
 					],
 					"path": [
 						"api",
 						"empresas",
-						"4"
+						"3"
 					]
-				}
+				},
+				"description": "Valida a remoção da própria empresa (ex: ID 3, criada no teste de SUPER ADMIN POST). Note que um admin de cliente só pode deletar a *sua própria* empresa."
 			},
-			"response": []
+			"response": [
+				{
+					"name": "Exemplo de Resposta de Sucesso",
+					"originalRequest": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/empresas/3"
+						}
+					},
+					"status": "No Content",
+					"code": 204,
+					"_postman_previewlanguage": null,
+					"header": [],
+					"cookie": [],
+					"body": null
+				}
+			]
 		}
 	],
 	"auth": {

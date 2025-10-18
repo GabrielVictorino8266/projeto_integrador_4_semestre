@@ -53,5 +53,9 @@ public class UsuarioAuthenticated implements UserDetails{
 	public boolean isEnabled() {
 		return this.user.isAtivo();
 	}
+	
+	public Usuario getUsuario() {
+        return this.user;
+    }
 
 }

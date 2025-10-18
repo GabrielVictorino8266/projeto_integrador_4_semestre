@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "1a1a1a1a-1a1a-4a1a-8a1a-1a1a1a1a1a1a",
+		"_postman_id": "1a1a1a1a-1a1a-4a1a-8a1a-final-sep",
 		"name": "1. Autenticação",
 		"description": "Use esta requisição para obter o Token JWT necessário para as outras coleções. O token será salvo automaticamente na variável de ambiente `jwt_token`.",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
@@ -54,7 +54,29 @@
 					]
 				}
 			},
-			"response": []
+			"response": [
+				{
+					"name": "Exemplo de Resposta de Sucesso",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/authenticate"
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "text",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "text/plain;charset=UTF-8"
+						}
+					],
+					"cookie": [],
+					"body": "eyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJzcHJpbmctc2VjdXJpdHktand0Iiwic3ViIjoiMTIzNDU2Nzg5MDEiLCJleHAiOjE3NjA0ODU0MjEsImlhdCI6MTc2MDQ4MTgyMSwic2NvcGUiOiJST0xFX0FETUlOIn0.iY1pHsKqaJdUXIMxTfRRERCoTiDB1uvaVMWnosFmIzWJaJCuqcphCgUeeaIO88t4ylINSGS9PWQf6txZTklod_meQfJDVVh_apQoLHzg-FNEI2tb4YvXyQxWVWYgdKE5pgmJ5HyD9CuLJ9BAxgXx_z84fm7QSAj4Y2PFnPZ9bDBbHhboHtjMkoS7X3B8Ucoz_rizPbjje-R1KeiP1CVB2yn_lKoRsBDwF0k8JwTO1SIlWoAuLSAPDKYrX1TZfhLdi_vOjUYak2FQQQj0fG5i9EX1MyOfTJ3HkHEIWTBW-hMmMgRbNYalx7b1sQH2Wic_kmln8sUYPbHeVyMeoLMZuw"
+				}
+			]
 		}
 	]
 }

@@ -16,6 +16,7 @@ public class Funcao implements GrantedAuthority {
 	
 	public static final String ROLE_ADMIN = "ROLE_ADMIN";
 	public static final String ROLE_MOTORISTA = "ROLE_MOTORISTA";
+	public static final String ROLE_SUPER_ADMIN = "ROLE_SUPER_ADMIN";
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

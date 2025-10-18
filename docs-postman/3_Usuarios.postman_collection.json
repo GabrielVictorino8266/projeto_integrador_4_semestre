@@ -1,13 +1,13 @@
 {
 	"info": {
-		"_postman_id": "3c3c3c3c-3c3c-4c3c-8c3c-3c3c3c3c3c3c",
+		"_postman_id": "3c3c3c3c-3c3c-4c3c-8c3c-final-sep",
 		"name": "3. Usuários",
-		"description": "Coleção para gerenciar os endpoints de Usuários. A autorização JWT é herdada para todas as requisições.",
+		"description": "Coleção para gerenciar os endpoints de Usuários. A autorização JWT é herdada. Contém respostas de exemplo (mocks) e validações multi-empresa.",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
 		{
-			"name": "GET Listar Todos os Usuários",
+			"name": "GET Listar Usuários (Da Própria Empresa)",
 			"request": {
 				"method": "GET",
 				"header": [],
@@ -20,12 +20,77 @@
 						"api",
 						"usuarios"
 					]
-				}
+				},
+				"description": "Lista apenas os usuários pertencentes à mesma empresa do usuário autenticado."
 			},
-			"response": []
+			"response": [
+				{
+					"name": "Exemplo de Resposta de Sucesso",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/usuarios"
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "[\n    {\n        \"id\": 1,\n        \"nome\": \"João Silva\",\n        \"email\": \"joao.silva@rapida.com.br\",\n        \"cpf\": \"12345678901\",\n        \"dataNascimento\": \"1985-03-15\",\n        \"telefone\": \"11987654321\",\n        \"empresa\": 1\n    },\n    {\n        \"id\": 2,\n        \"nome\": \"Carlos Santos\",\n        \"email\": \"carlos.santos@rapida.com.br\",\n        \"cpf\": \"23456789012\",\n        \"dataNascimento\": \"1990-07-22\",\n        \"telefone\": \"11976543210\",\n        \"empresa\": 1\n    }\n]"
+				}
+			]
 		},
 		{
-			"name": "GET Buscar Usuário por CPF",
+			"name": "GET Buscar Usuário por ID (Da Própria Empresa)",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/usuarios/2",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"usuarios",
+						"2"
+					]
+				},
+				"description": "Busca um usuário específico pelo ID, validando se ele pertence à empresa do usuário autenticado."
+			},
+			"response": [
+				{
+					"name": "Exemplo de Resposta de Sucesso",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/usuarios/2"
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"id\": 2,\n    \"nome\": \"Carlos Santos\",\n    \"email\": \"carlos.santos@rapida.com.br\",\n    \"cpf\": \"23456789012\",\n    \"dataNascimento\": \"1990-07-22\",\n    \"telefone\": \"11976543210\",\n    \"empresa\": 1\n}"
+				}
+			]
+		},
+		{
+			"name": "GET Buscar Usuário por CPF (Da Própria Empresa)",
 			"request": {
 				"method": "GET",
 				"header": [],
@@ -45,18 +110,41 @@
 							"value": "12345678901"
 						}
 					]
-				}
+				},
+				"description": "Busca um usuário específico pelo CPF, validando se ele pertence à empresa do usuário autenticado."
 			},
-			"response": []
+			"response": [
+				{
+					"name": "Exemplo de Resposta de Sucesso",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/usuarios/buscar?cpf=12345678901"
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"id\": 1,\n    \"nome\": \"João Silva\",\n    \"email\": \"joao.silva@rapida.com.br\",\n    \"cpf\": \"12345678901\",\n    \"dataNascimento\": \"1985-03-15\",\n    \"telefone\": \"11987654321\",\n    \"empresa\": 1\n}"
+				}
+			]
 		},
 		{
-			"name": "POST Criar Usuário",
+			"name": "[CLIENTE ADMIN] POST Criar Usuário (Na Própria Empresa)",
 			"request": {
 				"method": "POST",
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"nome\": \"Maria Souza\",\n    \"senha\": \"password123\",\n    \"cpf\": \"98765432100\",\n    \"email\": \"maria.souza@rapida.com.br\",\n    \"dataNascimento\": \"1995-10-20\",\n    \"telefone\": \"11912345678\",\n    \"empresa\": 1\n}",
+					"raw": "{\n    \"nome\": \"Novo Colaborador\",\n    \"senha\": \"senhaSegura456\",\n    \"cpf\": \"10101010101\",\n    \"email\": \"novo.colaborador@rapida.com.br\",\n    \"dataNascimento\": \"1998-11-10\",\n    \"telefone\": \"11900001111\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -72,18 +160,105 @@
 						"api",
 						"usuarios"
 					]
-				}
+				},
+				"description": "Cria um novo usuário, garantindo que ele seja associado à empresa do usuário autenticado."
 			},
-			"response": []
+			"response": [
+				{
+					"name": "Exemplo de Resposta de Sucesso",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"nome\": \"Novo Colaborador\",\n    \"senha\": \"senhaSegura456\",\n    \"cpf\": \"10101010101\",\n    \"email\": \"novo.colaborador@rapida.com.br\",\n    \"dataNascimento\": \"1998-11-10\",\n    \"telefone\": \"11900001111\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/usuarios"
+						}
+					},
+					"status": "Created",
+					"code": 201,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"id\": 5,\n    \"nome\": \"Novo Colaborador\",\n    \"email\": \"novo.colaborador@rapida.com.br\",\n    \"cpf\": \"10101010101\",\n    \"dataNascimento\": \"1998-11-10\",\n    \"telefone\": \"11900001111\",\n    \"empresa\": 1\n}"
+				}
+			]
 		},
 		{
-			"name": "PUT Atualizar Usuário",
+			"name": "[SUPER ADMIN] POST Criar Admin para Empresa",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"nome\": \"Admin da Nova Empresa\",\n    \"senha\": \"senhaSeguraCliente123\",\n    \"cpf\": \"11122233344\",\n    \"email\": \"admin@novaempresa.com\",\n    \"dataNascimento\": \"1990-01-01\",\n    \"telefone\": \"11988887777\",\n    \"empresaId\": 3 \n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/admin/usuarios",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"admin",
+						"usuarios"
+					]
+				},
+				"description": "Cria o primeiro usuário (Admin) para uma empresa recém-criada. Requer token de SUPER_ADMIN. O 'empresaId' deve ser o ID da empresa criada."
+			},
+			"response": [
+				{
+					"name": "Exemplo de Resposta de Sucesso (Super Admin)",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"nome\": \"Admin da Nova Empresa\",\n    \"senha\": \"senhaSeguraCliente123\",\n    \"cpf\": \"11122233344\",\n    \"email\": \"admin@novaempresa.com\",\n    \"dataNascimento\": \"1990-01-01\",\n    \"telefone\": \"11988887777\",\n    \"empresaId\": 3 \n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/admin/usuarios"
+						}
+					},
+					"status": "Created",
+					"code": 201,
+					"_postman_previewlanguage": "text",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "text/plain;charset=UTF-8"
+						}
+					],
+					"cookie": [],
+					"body": "Usuário Admin criado com sucesso para a empresa ID: 3"
+				}
+			]
+		},
+		{
+			"name": "PUT Atualizar Usuário (Da Própria Empresa)",
 			"request": {
 				"method": "PUT",
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"nome\": \"Carlos Santos Silva\",\n    \"senha\": \"novaSenha456\",\n    \"cpf\": \"23456789012\",\n    \"email\": \"carlos.santos@rapida.com.br\",\n    \"dataNascimento\": \"1990-07-22\",\n    \"telefone\": \"11999998888\",\n    \"empresa\": 1\n}",
+					"raw": "{\n    \"nome\": \"Carlos Santos Silva Atualizado\",\n    \"senha\": \"\",\n    \"cpf\": \"23456789012\",\n    \"email\": \"carlos.santos.update@rapida.com.br\",\n    \"dataNascimento\": \"1990-07-22\",\n    \"telefone\": \"11977778888\",\n    \"empresa\": 1\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -100,28 +275,73 @@
 						"usuarios",
 						"2"
 					]
-				}
+				},
+				"description": "Atualiza um usuário existente (ex: ID 2), validando se ele pertence à empresa do usuário autenticado."
 			},
-			"response": []
+			"response": [
+				{
+					"name": "Exemplo de Resposta de Sucesso",
+					"originalRequest": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"nome\": \"Carlos Santos Silva Atualizado\",\n    \"senha\": \"\",\n    \"cpf\": \"23456789012\",\n    \"email\": \"carlos.santos.update@rapida.com.br\",\n    \"dataNascimento\": \"1990-07-22\",\n    \"telefone\": \"11977778888\",\n    \"empresa\": 1\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/usuarios/2"
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"id\": 2,\n    \"nome\": \"Carlos Santos Silva Atualizado\",\n    \"email\": \"carlos.santos.update@rapida.com.br\",\n    \"cpf\": \"23456789012\",\n    \"dataNascimento\": \"1990-07-22\",\n    \"telefone\": \"11977778888\",\n    \"empresa\": 1\n}"
+				}
+			]
 		},
 		{
-			"name": "DELETE Deletar Usuário",
+			"name": "DELETE Deletar Usuário (Da Própria Empresa)",
 			"request": {
 				"method": "DELETE",
 				"header": [],
 				"url": {
-					"raw": "{{baseUrl}}/api/usuarios/3",
+					"raw": "{{baseUrl}}/api/usuarios/5",
 					"host": [
 						"{{baseUrl}}"
 					],
 					"path": [
 						"api",
 						"usuarios",
-						"3"
+						"5"
 					]
-				}
+				},
+				"description": "Deleta um usuário (ex: ID 5, criado no teste de POST), validando se ele pertence à empresa do usuário autenticado."
 			},
-			"response": []
+			"response": [
+				{
+					"name": "Exemplo de Resposta de Sucesso",
+					"originalRequest": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/usuarios/5"
+						}
+					},
+					"status": "No Content",
+					"code": 204,
+					"_postman_previewlanguage": null,
+					"header": [],
+					"cookie": [],
+					"body": null
+				}
+			]
 		}
 	],
 	"auth": {

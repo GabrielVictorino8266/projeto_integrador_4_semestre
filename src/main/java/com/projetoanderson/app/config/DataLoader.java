@@ -34,6 +34,7 @@ import com.projetoanderson.app.repository.VeiculoRepository;
 
 /**
  * Classe responsável por carregar dados iniciais no banco de dados.
+ * (Versão com Super Admin).
  * Executa automaticamente na inicialização da aplicação.
  */
 @Configuration
@@ -71,84 +72,88 @@ public class DataLoader {
             funcaoMotorista.setNome(Funcao.ROLE_MOTORISTA);
             funcaoMotorista = funcaoRepository.save(funcaoMotorista);
 
+            // --- ADICIONADO SUPER ADMIN ---
+            Funcao funcaoSuperAdmin = new Funcao();
+            funcaoSuperAdmin.setNome(Funcao.ROLE_SUPER_ADMIN);
+            funcaoSuperAdmin = funcaoRepository.save(funcaoSuperAdmin);
+            // --------------------------------
+
             // 2. CRIAR EMPRESAS
             logger.info("Criando empresas...");
+            
+            // --- ADICIONADO EMPRESA SISTEMA ---
+            // Empresa especial para o Super Admin
+            Empresa empresaSistema = criarEmpresa("Sistema Interno Admin", "Sistema", "00000000000000");
+            empresaSistema = empresaRepository.save(empresaSistema);
+            // -----------------------------------
+
+            // Empresas de clientes
             Empresa empresa1 = criarEmpresa("Transportadora Rápida Ltda", "Rápida Transportes", "12345678000190");
             empresa1 = empresaRepository.save(empresa1);
 
             Empresa empresa2 = criarEmpresa("Logística Express S.A.", "Express Log", "98765432000111");
             empresa2 = empresaRepository.save(empresa2);
 
-            Empresa empresa3 = criarEmpresa("Frota Brasil Transportes ME", "Frota Brasil", "11223344000155");
-            empresa3 = empresaRepository.save(empresa3);
-
-            // 3. CRIAR USUÁRIOS
+            // 3. CRIAR USUÁRIOS E PERFIS
             logger.info("Criando usuários...");
-            
-            // Empresa 1 - Admins e Motoristas
-            Usuario joao = criarUsuario("João Silva", "joao.silva@rapida.com.br", "12345678901", 
+
+            // --- ADICIONADO USUÁRIO SUPER ADMIN ---
+            Usuario superAdmin = criarUsuario("Super Admin", "superadmin@sistema.com", "00000000000",
+                    "1990-01-01", "00000000000", "superadmin123", passwordEncoder, empresaSistema);
+            Set<Funcao> funcoesSuperAdmin = new HashSet<>();
+            funcoesSuperAdmin.add(funcaoSuperAdmin); // Role principal
+            funcoesSuperAdmin.add(funcaoAdmin);      // Também é um admin
+            superAdmin.setFuncoes(funcoesSuperAdmin);
+            superAdmin = usuarioRepository.save(superAdmin);
+            // ----------------------------------------
+
+            // --- Usuários Clientes ---
+
+            // Empresa 1 - Rápida Transportes (1 admin, 1 motorista)
+            Usuario joao = criarUsuario("João Silva (Admin)", "joao.silva@rapida.com.br", "12345678901",
                     "1985-03-15", "11987654321", "admin123", passwordEncoder, empresa1);
             Set<Funcao> funcoesJoao = new HashSet<>();
             funcoesJoao.add(funcaoAdmin);
             joao.setFuncoes(funcoesJoao);
-            joao = usuarioRepository.save(joao);
+            joao = usuarioRepository.save(joao); // Admin não tem perfil, pode salvar direto.
 
-            Usuario carlos = criarUsuario("Carlos Santos", "carlos.santos@rapida.com.br", "23456789012",
+            // --- Motorista Carlos (Empresa 1) ---
+            Usuario carlos = criarUsuario("Carlos Santos (Motorista)", "carlos.santos@rapida.com.br", "23456789012",
                     "1990-07-22", "11976543210", "motorista456", passwordEncoder, empresa1);
             Set<Funcao> funcoesCarlos = new HashSet<>();
             funcoesCarlos.add(funcaoMotorista);
             carlos.setFuncoes(funcoesCarlos);
-            carlos = usuarioRepository.save(carlos);
+            // Cria o perfil ANTES de salvar o usuário
+            PerfilMotorista perfilCarlos = criarPerfilMotorista(TipoCNH.D, "23456789012", 9, carlos);
+            carlos.setPerfilMotorista(perfilCarlos); // Associa o perfil ao usuário
+            carlos = usuarioRepository.save(carlos); // Salva o usuário (o perfil será salvo via cascade)
 
-            Usuario ana = criarUsuario("Ana Costa", "ana.costa@rapida.com.br", "34567890123",
-                    "1988-11-30", "11965432109", "gestor789", passwordEncoder, empresa1);
-            Set<Funcao> funcoesAna = new HashSet<>();
-            funcoesAna.add(funcaoAdmin);
-            ana.setFuncoes(funcoesAna);
-            ana = usuarioRepository.save(ana);
 
-            // Empresa 2
-            Usuario maria = criarUsuario("Maria Oliveira", "maria.oliveira@expresslog.com.br", "45678901234",
+            // Empresa 2 - Express Log (1 admin, 1 motorista)
+            Usuario maria = criarUsuario("Maria Oliveira (Admin)", "maria.oliveira@expresslog.com.br", "67890123456",
                     "1992-05-18", "21987654321", "carlos123", passwordEncoder, empresa2);
             Set<Funcao> funcoesMaria = new HashSet<>();
             funcoesMaria.add(funcaoAdmin);
             maria.setFuncoes(funcoesMaria);
-            maria = usuarioRepository.save(maria);
+            maria = usuarioRepository.save(maria); // Admin não tem perfil, pode salvar direto.
 
-            Usuario pedro = criarUsuario("Pedro Almeida", "pedro.almeida@expresslog.com.br", "56789012345",
+            // --- Motorista Pedro (Empresa 2) ---
+            Usuario pedro = criarUsuario("Pedro Almeida (Motorista)", "pedro.almeida@expresslog.com.br", "78901234567",
                     "1987-09-25", "21976543210", "maria456", passwordEncoder, empresa2);
             Set<Funcao> funcoesPedro = new HashSet<>();
             funcoesPedro.add(funcaoMotorista);
             pedro.setFuncoes(funcoesPedro);
-            pedro = usuarioRepository.save(pedro);
-
-            // Empresa 3
-            Usuario fernanda = criarUsuario("Fernanda Lima", "fernanda.lima@frotabrasil.com.br", "67890123456",
-                    "1995-01-10", "31987654321", "joao789", passwordEncoder, empresa3);
-            Set<Funcao> funcoesFernanda = new HashSet<>();
-            funcoesFernanda.add(funcaoMotorista);
-            fernanda.setFuncoes(funcoesFernanda);
-            fernanda = usuarioRepository.save(fernanda);
-
-            // 4. CRIAR PERFIS DE MOTORISTA
-            logger.info("Criando perfis de motorista...");
-            PerfilMotorista perfilCarlos = criarPerfilMotorista(TipoCNH.D, "12345678901", 9, carlos);
-            perfilCarlos.setId(carlos.getId()); // Define o ID manualmente por causa do @MapsId
-            perfilCarlos = perfilMotoristaRepository.save(perfilCarlos);
-
-            PerfilMotorista perfilPedro = criarPerfilMotorista(TipoCNH.C, "23456789012", 10, pedro);
-            perfilPedro.setId(pedro.getId()); // Define o ID manualmente por causa do @MapsId
-            perfilPedro = perfilMotoristaRepository.save(perfilPedro);
-
-            PerfilMotorista perfilFernanda = criarPerfilMotorista(TipoCNH.B, "34567890123", 8, fernanda);
-            perfilFernanda.setId(fernanda.getId()); // Define o ID manualmente por causa do @MapsId
-            perfilFernanda = perfilMotoristaRepository.save(perfilFernanda);
-
-            // 5. CRIAR VEÍCULOS
-            logger.info("Criando veículos...");
+            // Cria o perfil ANTES de salvar o usuário
+            PerfilMotorista perfilPedro = criarPerfilMotorista(TipoCNH.C, "78901234567", 8, pedro);
+            pedro.setPerfilMotorista(perfilPedro); // Associa o perfil ao usuário
+            pedro = usuarioRepository.save(pedro); // Salva o usuário (o perfil será salvo via cascade)
             
-            // Empresa 1
-            Veiculo veiculo1 = criarVeiculo("V001", "ABC1D23", TipoVeiculo.CAMINHAO, 2020, 
+
+            // 5. CRIAR VEÍCULOS (2 por empresa cliente)
+            logger.info("Criando veículos...");
+
+            // Empresa 1 - Rápida Transportes
+            Veiculo veiculo1 = criarVeiculo("V001", "ABC1D23", TipoVeiculo.CAMINHAO, 2020,
                     "Mercedes-Benz", 85000, 100000, StatusVeiculo.ATIVO, empresa1);
             veiculo1 = veiculoRepository.save(veiculo1);
 
@@ -156,82 +161,63 @@ public class DataLoader {
                     "Fiat", 45000, 80000, StatusVeiculo.ATIVO, empresa1);
             veiculo2 = veiculoRepository.save(veiculo2);
 
-            Veiculo veiculo3 = criarVeiculo("V003", "GHI7J89", TipoVeiculo.CARRO, 2022,
-                    "Volkswagen", 25000, 60000, StatusVeiculo.MANUTENCAO, empresa1);
-            veiculo3 = veiculoRepository.save(veiculo3);
-
-            // Empresa 2
-            Veiculo veiculo4 = criarVeiculo("V004", "JKL0M12", TipoVeiculo.CAMINHAO, 2019,
-                    "Volvo", 120000, 150000, StatusVeiculo.ATIVO, empresa2);
-            veiculo4 = veiculoRepository.save(veiculo4);
-
-            Veiculo veiculo5 = criarVeiculo("V005", "NOP3Q45", TipoVeiculo.ONIBUS, 2021,
-                    "Scania", 95000, 120000, StatusVeiculo.ATIVO, empresa2);
-            veiculo5 = veiculoRepository.save(veiculo5);
-
-            // Empresa 3
-            Veiculo veiculo6 = criarVeiculo("V006", "RST6U78", TipoVeiculo.VAN, 2023,
-                    "Renault", 15000, 70000, StatusVeiculo.ATIVO, empresa3);
+            // Empresa 2 - Express Log
+            Veiculo veiculo6 = criarVeiculo("V006", "PQR6S78", TipoVeiculo.CAMINHAO, 2020,
+                    "Mercedes-Benz", 95000, 110000, StatusVeiculo.ATIVO, empresa2);
             veiculo6 = veiculoRepository.save(veiculo6);
 
-            // 6. CRIAR INCIDENTES
+            Veiculo veiculo7 = criarVeiculo("V007", "STU9V01", TipoVeiculo.VAN, 2021,
+                    "Fiat", 55000, 90000, StatusVeiculo.ATIVO, empresa2);
+            veiculo7 = veiculoRepository.save(veiculo7);
+
+
+            // 6. CRIAR INCIDENTES (2 por motorista)
             logger.info("Criando incidentes...");
-            incidenteRepository.save(criarIncidente("Pequeno arranhão no para-choque ao estacionar", 
+
+            incidenteRepository.save(criarIncidente("Pequeno arranhão no para-choque ao estacionar",
                     Severidade.LEVE, perfilCarlos));
-            
-            incidenteRepository.save(criarIncidente("Freada brusca para evitar colisão", 
+            incidenteRepository.save(criarIncidente("Freada brusca para evitar colisão",
                     Severidade.MODERADO, perfilCarlos));
-            
-            incidenteRepository.save(criarIncidente("Excesso de velocidade detectado em rodovia", 
+
+            incidenteRepository.save(criarIncidente("Excesso de velocidade detectado em rodovia",
                     Severidade.GRAVE, perfilPedro));
-            
-            incidenteRepository.save(criarIncidente("Esqueceu de verificar espelhos antes de manobra", 
-                    Severidade.LEVE, perfilFernanda));
-            
-            incidenteRepository.save(criarIncidente("Colisão leve em estacionamento", 
-                    Severidade.MODERADO, perfilFernanda));
-            
-            incidenteRepository.save(criarIncidente("Dirigiu por 6 horas sem pausa obrigatória", 
-                    Severidade.GRAVE, perfilCarlos));
+            incidenteRepository.save(criarIncidente("Colisão leve em estacionamento",
+                    Severidade.MODERADO, perfilPedro));
 
-            // 7. CRIAR MANUTENÇÕES
+
+            // 7. CRIAR MANUTENÇÕES (2 por veículo)
             logger.info("Criando manutenções...");
-            
-            // Veículo 1 - Caminhão Mercedes
-            manutencaoRepository.save(criarManutencao("2024-01-15", "Troca de óleo e filtros", 
+
+            // Veículo 1
+            manutencaoRepository.save(criarManutencao("2024-01-15", "Troca de óleo e filtros",
                     850.00, TipoManutencao.PREVENTIVA, veiculo1));
-            manutencaoRepository.save(criarManutencao("2024-06-20", "Substituição de pastilhas de freio", 
+            manutencaoRepository.save(criarManutencao("2024-06-20", "Substituição de pastilhas de freio",
                     1200.00, TipoManutencao.PREVENTIVA, veiculo1));
-            manutencaoRepository.save(criarManutencao("2024-09-10", "Reparo no sistema de arrefecimento", 
-                    2500.00, TipoManutencao.CORRETIVA, veiculo1));
 
-            // Veículo 2 - Van Fiat
-            manutencaoRepository.save(criarManutencao("2024-03-05", "Revisão dos 40.000 km", 
-                    650.00, TipoManutencao.PREVENTIVA, veiculo2));
-            manutencaoRepository.save(criarManutencao("2024-08-12", "Troca de pneus", 
-                    1800.00, TipoManutencao.PREVENTIVA, veiculo2));
+            // Veículo 2
+            manutencaoRepository.save(criarManutencao("2024-02-10", "Troca de óleo e filtros",
+                    450.00, TipoManutencao.PREVENTIVA, veiculo2));
+            manutencaoRepository.save(criarManutencao("2024-07-15", "Substituição de pastilhas de freio",
+                    800.00, TipoManutencao.PREVENTIVA, veiculo2));
 
-            // Veículo 3 - Carro VW (em manutenção)
-            manutencaoRepository.save(criarManutencao("2024-10-01", "Reparo na transmissão", 
-                    4500.00, TipoManutencao.CORRETIVA, veiculo3));
+            // Veículo 6
+            manutencaoRepository.save(criarManutencao("2024-01-20", "Troca de óleo e filtros",
+                    880.00, TipoManutencao.PREVENTIVA, veiculo6));
+            manutencaoRepository.save(criarManutencao("2024-06-25", "Substituição de pastilhas de freio",
+                    1250.00, TipoManutencao.PREVENTIVA, veiculo6));
 
-            // Veículo 4 - Caminhão Volvo
-            manutencaoRepository.save(criarManutencao("2024-02-20", "Troca de óleo e filtros", 
-                    950.00, TipoManutencao.PREVENTIVA, veiculo4));
-            manutencaoRepository.save(criarManutencao("2024-07-15", "Manutenção do sistema de injeção", 
-                    3200.00, TipoManutencao.CORRETIVA, veiculo4));
+            // Veículo 7
+            manutencaoRepository.save(criarManutencao("2024-02-15", "Troca de óleo e filtros",
+                    480.00, TipoManutencao.PREVENTIVA, veiculo7));
+            manutencaoRepository.save(criarManutencao("2024-07-20", "Substituição de pastilhas de freio",
+                    850.00, TipoManutencao.PREVENTIVA, veiculo7));
 
-            // Veículo 5 - Ônibus Scania
-            manutencaoRepository.save(criarManutencao("2024-04-10", "Revisão completa dos 90.000 km", 
-                    5500.00, TipoManutencao.PREVENTIVA, veiculo5));
 
-            // Veículo 6 - Van Renault
-            manutencaoRepository.save(criarManutencao("2024-05-25", "Troca de óleo e filtros", 
-                    450.00, TipoManutencao.PREVENTIVA, veiculo6));
-
-            logger.info("Carga de dados concluída com sucesso!");
+            logger.info("Carga de dados reduzida concluída com sucesso!");
+            logger.info("Total de funções: {}", funcaoRepository.count());
             logger.info("Total de empresas: {}", empresaRepository.count());
             logger.info("Total de usuários: {}", usuarioRepository.count());
+            logger.info("Total de perfis de motorista: {}", perfilMotoristaRepository.count());
             logger.info("Total de veículos: {}", veiculoRepository.count());
             logger.info("Total de incidentes: {}", incidenteRepository.count());
             logger.info("Total de manutenções: {}", manutencaoRepository.count());
@@ -269,7 +255,7 @@ public class DataLoader {
         perfil.setTipoCnh(tipoCnh);
         perfil.setNumeroCnh(numeroCnh);
         perfil.setDesempenho(desempenho);
-        perfil.setUsuario(usuario);
+        perfil.setUsuario(usuario); // Associa o usuário ao perfil
         perfil.setAtivo(true);
         return perfil;
     }

@@ -18,9 +18,9 @@ public class UsuarioDetailsServiceImpl implements UserDetailsService{
 
 	@Override
 	public UserDetails loadUserByUsername(String cpf) throws UsernameNotFoundException {
-		return usuarioRepository.findByCpf(cpf)
-				.map(UsuarioAuthenticated::new)
-				.orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado."));
+	    return usuarioRepository.findByCpf(cpf) // ou findByCpfComEmpresa(cpf)
+	            .map(UsuarioAuthenticated::new)
+	            .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado."));
 	}
 
 }
