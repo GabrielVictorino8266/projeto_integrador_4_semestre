@@ -1,9 +1,10 @@
 package com.projetoanderson.app.service;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
@@ -20,6 +21,7 @@ import com.projetoanderson.app.model.entity.Empresa;
 import com.projetoanderson.app.model.entity.Funcao;
 import com.projetoanderson.app.repository.EmpresaRepository;
 import com.projetoanderson.app.security.UsuarioAuthenticated;
+import com.projetoanderson.app.specification.EmpresaSpecification;
 
 @Service
 public class EmpresaService {
@@ -38,32 +40,35 @@ public class EmpresaService {
 		return (UsuarioAuthenticated) authentication.getPrincipal();
 	}
 
-	private Empresa getEmpresaDoUsuarioLogado() {
-		UsuarioAuthenticated usuarioAuth = getUsuarioAutenticado();
-		Empresa empresa = usuarioAuth.getUsuario().getEmpresa();
-		if (empresa == null) {
-			if (temRole(usuarioAuth, Funcao.ROLE_SUPER_ADMIN)) {
-				throw new IllegalStateException("Super Admin não está associado a uma empresa padrão.");
-			}
-			throw new IllegalStateException("Usuário autenticado não está associado a nenhuma empresa.");
-		}
-		return empresa;
-	}
-
 	private boolean temRole(UsuarioAuthenticated usuarioAuth, String roleName) {
 		return usuarioAuth.getAuthorities().stream().map(GrantedAuthority::getAuthority)
 				.anyMatch(role -> role.equals(roleName));
 	}
 
+	private Long getIdEmpresaUsuarioLogadoOuNull() {
+		UsuarioAuthenticated usuarioAuth = getUsuarioAutenticado();
+		if (temRole(usuarioAuth, Funcao.ROLE_SUPER_ADMIN)) {
+			return null;
+		}
+		Empresa empresaDoUsuario = usuarioAuth.getUsuario().getEmpresa();
+		if (empresaDoUsuario == null) {
+			throw new IllegalStateException(
+					"Usuário autenticado (" + usuarioAuth.getUsername() + ") não está associado a nenhuma empresa.");
+		}
+		return empresaDoUsuario.getId();
+	}
+
 	public void validarAcessoEmpresa(Long idEmpresaRequerida) {
 		UsuarioAuthenticated usuarioAuth = getUsuarioAutenticado();
-
 		if (temRole(usuarioAuth, Funcao.ROLE_SUPER_ADMIN)) {
-			return;
+			if (!empresaRepository.existsById(idEmpresaRequerida)) {
+				throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+						"Empresa com id " + idEmpresaRequerida + " não encontrada.");
+			}
+			return; // Super Admin pode acessar
 		}
-
-		Empresa empresaDoUsuario = usuarioAuth.getUsuario().getEmpresa();
-		if (empresaDoUsuario == null || !empresaDoUsuario.getId().equals(idEmpresaRequerida)) {
+		Long idEmpresaDoUsuario = getIdEmpresaUsuarioLogadoOuNull();
+		if (!idEmpresaDoUsuario.equals(idEmpresaRequerida)) {
 			throw new AccessDeniedException("Acesso negado. Você não pertence a esta empresa.");
 		}
 	}
@@ -71,38 +76,35 @@ public class EmpresaService {
 	@Transactional
 	public void deletePorId(Long id) {
 		validarAcessoEmpresa(id);
-
-		if (!empresaRepository.existsById(id)) {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Empresa com id " + id + " não encontrada.");
-		}
 		empresaRepository.deleteById(id);
 	}
 
 	@Transactional(readOnly = true)
-	public EmpresaResponseDTO buscarEmpresaPorID(Long id) {
-		validarAcessoEmpresa(id); 
-
-		return empresaRepository.findById(id).map(this::converterResponseParaDTO).orElseThrow(
-				() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Empresa com id " + id + " não encontrada."));
+	public Optional<EmpresaResponseDTO> buscarEmpresaPorIDOptional(Long id) {
+		try {
+			validarAcessoEmpresa(id);
+		} catch (AccessDeniedException | ResponseStatusException e) {
+			return Optional.empty();
+		}
+		return empresaRepository.findById(id).map(this::converterResponseParaDTO);
 	}
 
 	@Transactional(readOnly = true)
-	public List<EmpresaResponseDTO> buscarTodas() {
-		UsuarioAuthenticated usuarioAuth = getUsuarioAutenticado();
+	public Page<EmpresaResponseDTO> buscarTodasComFiltro(String razaoSocial, String nomeFantasia, String cnpj,
+			Pageable pageable) {
 
-		if (temRole(usuarioAuth, Funcao.ROLE_SUPER_ADMIN)) {
-			return empresaRepository.findAll().stream().map(this::converterResponseParaDTO)
-					.collect(Collectors.toList());
-		} else {
-			Empresa empresaLogada = getEmpresaDoUsuarioLogado();
-			return Collections.singletonList(converterResponseParaDTO(empresaLogada));
-		}
+		Long idEmpresaEspecifica = getIdEmpresaUsuarioLogadoOuNull();
+
+		Specification<Empresa> spec = EmpresaSpecification.comFiltros(idEmpresaEspecifica, razaoSocial, nomeFantasia,
+				cnpj);
+
+		Page<Empresa> paginaEmpresas = empresaRepository.findAll(spec, pageable);
+		return paginaEmpresas.map(this::converterResponseParaDTO);
 	}
 
 	@Transactional
 	public EmpresaResponseDTO criarEmpresa(EmpresaRequestDTO requestDTO) {
 		UsuarioAuthenticated usuarioAuth = getUsuarioAutenticado();
-
 		if (!temRole(usuarioAuth, Funcao.ROLE_SUPER_ADMIN)) {
 			throw new AccessDeniedException("Apenas o Super Administrador pode criar novas empresas.");
 		}
@@ -119,16 +121,16 @@ public class EmpresaService {
 		novaEmpresa.setCnpj(cnpj);
 		novaEmpresa.setAtivo(true);
 		Empresa empresaCriada = empresaRepository.save(novaEmpresa);
-
 		return converterResponseParaDTO(empresaCriada);
 	}
 
 	@Transactional
 	public EmpresaResponseDTO atualizarEmpresaParcialmente(Long id, EmpresaPatchDTO dto) {
-		validarAcessoEmpresa(id);
+		validarAcessoEmpresa(id); // Valida acesso e existência
 
-		Empresa empresaAAtualizar = empresaRepository.findById(id).orElseThrow(
-				() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Empresa com id " + id + " não encontrada."));
+		Empresa empresaAAtualizar = empresaRepository.findById(id)
+				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+						"Empresa com id " + id + " não encontrada (inesperado após validação).")); // Não deve acontecer
 
 		boolean modificado = false;
 
@@ -136,12 +138,10 @@ public class EmpresaService {
 			empresaAAtualizar.setRazaoSocial(dto.getRazaoSocial());
 			modificado = true;
 		}
-
 		if (dto.getNomeFantasia() != null && !dto.getNomeFantasia().equals(empresaAAtualizar.getNomeFantasia())) {
 			empresaAAtualizar.setNomeFantasia(dto.getNomeFantasia());
 			modificado = true;
 		}
-
 		String novoCnpj = dto.getCnpj();
 		if (novoCnpj != null && !novoCnpj.equals(empresaAAtualizar.getCnpj())) {
 			if (empresaRepository.existsByCnpj(novoCnpj)) {
@@ -155,7 +155,6 @@ public class EmpresaService {
 		if (modificado) {
 			empresaAAtualizar = empresaRepository.save(empresaAAtualizar);
 		}
-
 		return converterResponseParaDTO(empresaAAtualizar);
 	}
 
@@ -169,9 +168,8 @@ public class EmpresaService {
 	}
 
 	private String formatarCnpj(String cnpj) {
-		if (cnpj == null || cnpj.length() != 14) {
+		if (cnpj == null || cnpj.length() != 14)
 			return cnpj;
-		}
 		return cnpj.substring(0, 2) + "." + cnpj.substring(2, 5) + "." + cnpj.substring(5, 8) + "/"
 				+ cnpj.substring(8, 12) + "-" + cnpj.substring(12, 14);
 	}

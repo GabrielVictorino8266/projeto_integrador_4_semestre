@@ -1,36 +1,71 @@
 {
 	"info": {
-		"_postman_id": "3c3c3c3c-3c3c-4c3c-8c3c-final-sep-centralized-patch",
-		"name": "3. Usuários (Admin com PATCH)",
-		"description": "Coleção para gerenciar Usuários. Usa PATCH para atualizações parciais. A autorização JWT é herdada. Contém endpoint separado para SUPER ADMIN criar admins de clientes (/api/admin/usuarios).",
+		"_postman_id": "3c3c3c3c-3c3c-4c3c-8c3c-final-sep-like-204-patch",
+		"name": "3. Usuários (LIKE, 204, PATCH)",
+		"description": "Coleção para gerenciar Usuários. Usa LIKE para buscas textuais (GET /api/usuarios), retorna 204 quando nada encontrado, e usa PATCH para atualizações parciais. A autorização JWT é herdada. Contém endpoint separado para SUPER ADMIN criar admins de clientes (/api/admin/usuarios).",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
 		{
-			"name": "GET Listar Usuários (Da Própria Empresa)",
+			"name": "GET Listar Usuários (LIKE, Paginação, Da Própria Empresa)",
 			"request": {
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{baseUrl}}/api/usuarios",
+					"raw": "{{baseUrl}}/api/usuarios?nome=jo&page=0&size=10&sort=nome,asc",
 					"host": [
 						"{{baseUrl}}"
 					],
 					"path": [
 						"api",
 						"usuarios"
+					],
+					"query": [
+						{
+							"key": "nome",
+							"value": "jo",
+							"description": "(Opcional) Busca parcial (LIKE) no nome.",
+							"disabled": true
+						},
+						{
+							"key": "email",
+							"value": "rapida.com",
+							"description": "(Opcional) Busca parcial (LIKE) no email.",
+							"disabled": true
+						},
+						{
+							"key": "cpf",
+							"value": "123",
+							"description": "(Opcional) Busca parcial (LIKE) no CPF.",
+							"disabled": true
+						},
+						{
+							"key": "page",
+							"value": "0",
+							"description": "(Opcional) Número da página (começa em 0). Padrão: 0."
+						},
+						{
+							"key": "size",
+							"value": "10",
+							"description": "(Opcional) Tamanho da página. Padrão: 20."
+						},
+						{
+							"key": "sort",
+							"value": "nome,asc",
+							"description": "(Opcional) Campo para ordenar e direção (asc/desc). Ex: nome,asc ou email,desc. Padrão: nome,asc."
+						}
 					]
 				},
-				"description": "Lista apenas os usuários pertencentes à mesma empresa do usuário autenticado."
+				"description": "Lista usuários da empresa do usuário autenticado, com filtros opcionais (usando LIKE) e paginação. Retorna 204 No Content se a busca não encontrar resultados."
 			},
 			"response": [
 				{
-					"name": "Exemplo de Resposta de Sucesso",
+					"name": "Exemplo Sucesso (com Resultados)",
 					"originalRequest": {
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/api/usuarios"
+							"raw": "{{baseUrl}}/api/usuarios?nome=jo&page=0&size=10&sort=nome,asc"
 						}
 					},
 					"status": "OK",
@@ -43,12 +78,28 @@
 						}
 					],
 					"cookie": [],
-					"body": "[\n    {\n        \"id\": 2,\n        \"nome\": \"João Silva (Admin)\",\n        \"email\": \"joao.silva@rapida.com.br\",\n        \"cpf\": \"12345678901\",\n        \"dataNascimento\": \"1985-03-15\",\n        \"telefone\": \"11987654321\",\n        \"empresaId\": 2\n    },\n    {\n        \"id\": 3,\n        \"nome\": \"Carlos Santos (Motorista)\",\n        \"email\": \"carlos.santos@rapida.com.br\",\n        \"cpf\": \"23456789012\",\n        \"dataNascimento\": \"1990-07-22\",\n        \"telefone\": \"11976543210\",\n        \"empresaId\": 2\n    }\n]"
+					"body": "{\n    \"content\": [\n        {\n            \"id\": 2,\n            \"nome\": \"João Silva (Admin)\",\n            \"email\": \"joao.silva@rapida.com.br\",\n            \"cpf\": \"12345678901\",\n            \"dataNascimento\": \"1985-03-15\",\n            \"telefone\": \"11987654321\",\n            \"empresaId\": 2\n        }\n    ],\n    \"pageable\": {\n        \"pageNumber\": 0,\n        \"pageSize\": 10,\n        \"sort\": {\n            \"sorted\": true,\n            \"unsorted\": false,\n            \"empty\": false\n        },\n        \"offset\": 0,\n        \"paged\": true,\n        \"unpaged\": false\n    },\n    \"last\": true,\n    \"totalPages\": 1,\n    \"totalElements\": 1,\n    \"size\": 10,\n    \"number\": 0,\n    \"sort\": {\n        \"sorted\": true,\n        \"unsorted\": false,\n        \"empty\": false\n    },\n    \"first\": true,\n    \"numberOfElements\": 1,\n    \"empty\": false\n}"
+				},
+				{
+					"name": "Exemplo Sem Resultados (204 No Content)",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/usuarios?nome=xyz"
+						}
+					},
+					"status": "No Content",
+					"code": 204,
+					"_postman_previewlanguage": null,
+					"header": [],
+					"cookie": [],
+					"body": null
 				}
 			]
 		},
 		{
-			"name": "GET Buscar Usuário por ID (Da Própria Empresa)",
+			"name": "GET Buscar Usuário por ID (Retorna 204 se não encontrado/acessível)",
 			"request": {
 				"method": "GET",
 				"header": [],
@@ -63,11 +114,11 @@
 						"3"
 					]
 				},
-				"description": "Busca um usuário específico pelo ID, validando se ele pertence à empresa do usuário autenticado (retorna 404/403 se não)."
+				"description": "Busca um usuário específico pelo ID. Valida se ele pertence à empresa do usuário autenticado. Retorna 204 No Content se o usuário não for encontrado OU se o acesso for negado."
 			},
 			"response": [
 				{
-					"name": "Exemplo de Resposta de Sucesso",
+					"name": "Exemplo Sucesso",
 					"originalRequest": {
 						"method": "GET",
 						"header": [],
@@ -86,11 +137,27 @@
 					],
 					"cookie": [],
 					"body": "{\n    \"id\": 3,\n    \"nome\": \"Carlos Santos (Motorista)\",\n    \"email\": \"carlos.santos@rapida.com.br\",\n    \"cpf\": \"23456789012\",\n    \"dataNascimento\": \"1990-07-22\",\n    \"telefone\": \"11976543210\",\n    \"empresaId\": 2\n}"
+				},
+				{
+					"name": "Exemplo Não Encontrado / Acesso Negado (204 No Content)",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/usuarios/999"
+						}
+					},
+					"status": "No Content",
+					"code": 204,
+					"_postman_previewlanguage": null,
+					"header": [],
+					"cookie": [],
+					"body": null
 				}
 			]
 		},
 		{
-			"name": "GET Buscar Usuário por CPF (Da Própria Empresa)",
+			"name": "GET Buscar Usuário por CPF (Busca Exata, Retorna 204)",
 			"request": {
 				"method": "GET",
 				"header": [],
@@ -111,11 +178,11 @@
 						}
 					]
 				},
-				"description": "Busca um usuário específico pelo CPF, validando se ele pertence à empresa do usuário autenticado."
+				"description": "Busca EXATA de um usuário pelo CPF, validando se ele pertence à empresa do usuário autenticado. Retorna 204 No Content se não encontrado ou acesso negado."
 			},
 			"response": [
 				{
-					"name": "Exemplo de Resposta de Sucesso",
+					"name": "Exemplo Sucesso",
 					"originalRequest": {
 						"method": "GET",
 						"header": [],
@@ -134,6 +201,22 @@
 					],
 					"cookie": [],
 					"body": "{\n    \"id\": 2,\n    \"nome\": \"João Silva (Admin)\",\n    \"email\": \"joao.silva@rapida.com.br\",\n    \"cpf\": \"12345678901\",\n    \"dataNascimento\": \"1985-03-15\",\n    \"telefone\": \"11987654321\",\n    \"empresaId\": 2\n}"
+				},
+				{
+					"name": "Exemplo Não Encontrado / Acesso Negado (204 No Content)",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/usuarios/buscar?cpf=99999999999"
+						}
+					},
+					"status": "No Content",
+					"code": 204,
+					"_postman_previewlanguage": null,
+					"header": [],
+					"cookie": [],
+					"body": null
 				}
 			]
 		},
@@ -144,7 +227,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"nome\": \"Novo Motorista\",\n    \"senha\": \"senhaMotorista789\",\n    \"cpf\": \"10101010101\",\n    \"email\": \"novo.motorista@rapida.com.br\",\n    \"dataNascimento\": \"1998-11-10\",\n    \"telefone\": \"11900001111\"\n}",
+					"raw": "{\n    \"nome\": \"Novo Motorista Via Admin\",\n    \"senha\": \"senhaMotorista789\",\n    \"cpf\": \"10101010101\",\n    \"email\": \"novo.motorista@empresa.com\",\n    \"dataNascimento\": \"1998-11-10\",\n    \"telefone\": \"11900001111\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -161,7 +244,7 @@
 						"usuarios"
 					]
 				},
-				"description": "Admin Cliente usa este endpoint para criar novos usuários (ex: Motoristas) DENTRO da sua própria empresa. A empresa é associada automaticamente."
+				"description": "Admin Cliente usa este endpoint para criar novos usuários (ex: Motoristas) DENTRO da sua própria empresa. A empresa é associada automaticamente. O frontend NÃO envia 'empresaId'."
 			},
 			"response": [
 				{
@@ -171,7 +254,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"nome\": \"Novo Motorista\",\n    \"senha\": \"senhaMotorista789\",\n    \"cpf\": \"10101010101\",\n    \"email\": \"novo.motorista@rapida.com.br\",\n    \"dataNascimento\": \"1998-11-10\",\n    \"telefone\": \"11900001111\"\n}"
+							"raw": "{\n    \"nome\": \"Novo Motorista Via Admin\",\n    \"senha\": \"senhaMotorista789\",\n    \"cpf\": \"10101010101\",\n    \"email\": \"novo.motorista@empresa.com\",\n    \"dataNascimento\": \"1998-11-10\",\n    \"telefone\": \"11900001111\"\n}"
 						},
 						"url": {
 							"raw": "{{baseUrl}}/api/usuarios"
@@ -187,7 +270,7 @@
 						}
 					],
 					"cookie": [],
-					"body": "{\n    \"id\": 6,\n    \"nome\": \"Novo Motorista\",\n    \"email\": \"novo.motorista@rapida.com.br\",\n    \"cpf\": \"10101010101\",\n    \"dataNascimento\": \"1998-11-10\",\n    \"telefone\": \"11900001111\",\n    \"empresaId\": 2\n}"
+					"body": "{\n    \"id\": 6,\n    \"nome\": \"Novo Motorista Via Admin\",\n    \"email\": \"novo.motorista@empresa.com\",\n    \"cpf\": \"10101010101\",\n    \"dataNascimento\": \"1998-11-10\",\n    \"telefone\": \"11900001111\",\n    \"empresaId\": 2\n}"
 				}
 			]
 		},
@@ -258,7 +341,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"nome\": \"Carlos Motorista Atualizado PATCH\",\n    \"telefone\": \"11977770000\"\n}",
+					"raw": "{\n    \"nome\": \"Carlos Motorista PATCH Update\",\n    \"telefone\": \"11977770000\",\n    \"senha\": \"NovaSenha123\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -276,7 +359,7 @@
 						"3"
 					]
 				},
-				"description": "Atualiza PARCIALMENTE um usuário existente (ex: ID 3). Envie apenas os campos que mudaram. Valida se ele pertence à empresa do usuário autenticado. Deixe a senha vazia ou omita para não alterá-la."
+				"description": "Atualiza PARCIALMENTE um usuário existente (ex: ID 3). Envie apenas os campos que mudaram. Valida se ele pertence à empresa do usuário autenticado. Deixe a senha vazia ou omita para não alterá-la. CPF não pode ser alterado aqui."
 			},
 			"response": [
 				{
@@ -286,7 +369,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"nome\": \"Carlos Motorista Atualizado PATCH\",\n    \"telefone\": \"11977770000\"\n}"
+							"raw": "{\n    \"nome\": \"Carlos Motorista PATCH Update\",\n    \"telefone\": \"11977770000\",\n    \"senha\": \"NovaSenha123\"\n}"
 						},
 						"url": {
 							"raw": "{{baseUrl}}/api/usuarios/3"
@@ -302,7 +385,7 @@
 						}
 					],
 					"cookie": [],
-					"body": "{\n    \"id\": 3,\n    \"nome\": \"Carlos Motorista Atualizado PATCH\",\n    \"email\": \"carlos.santos@rapida.com.br\",\n    \"cpf\": \"23456789012\",\n    \"dataNascimento\": \"1990-07-22\",\n    \"telefone\": \"11977770000\",\n    \"empresaId\": 2\n}"
+					"body": "{\n    \"id\": 3,\n    \"nome\": \"Carlos Motorista PATCH Update\",\n    \"email\": \"carlos.santos@rapida.com.br\",\n    \"cpf\": \"23456789012\",\n    \"dataNascimento\": \"1990-07-22\",\n    \"telefone\": \"11977770000\",\n    \"empresaId\": 2\n}"
 				}
 			]
 		},
@@ -322,7 +405,7 @@
 						"6"
 					]
 				},
-				"description": "Deleta um usuário (ex: ID 6, criado no teste de POST), validando se ele pertence à empresa do usuário autenticado."
+				"description": "Deleta um usuário (ex: ID 6, criado no teste de POST), validando se ele pertence à empresa do usuário autenticado. Retorna 204 se sucesso ou se já não existia."
 			},
 			"response": [
 				{
