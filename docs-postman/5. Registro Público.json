@@ -1,0 +1,136 @@
+{
+	"info": {
+		"_postman_id": "4d4d4d4d-4d4d-4d4d-8d4d-final-sep-register",
+		"name": "4. Registro Público",
+		"description": "Endpoint público para auto-registro de novos clientes (cria a empresa e o primeiro admin). Não requer autenticação.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "POST Registrar Novo Cliente",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"razaoSocial\": \"Empresa Auto Registro LTDA\",\n    \"nomeFantasia\": \"Auto Registro Transp\",\n    \"cnpj\": \"77889900000144\",\n    \"adminNome\": \"Admin Auto Registrado\",\n    \"adminSenha\": \"senhaAutoRegistro123\",\n    \"adminCpf\": \"44455566677\",\n    \"adminEmail\": \"admin@autoregistro.com\",\n    \"adminDataNascimento\": \"1992-02-02\",\n    \"adminTelefone\": \"11944443333\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/public/register",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"public",
+						"register"
+					]
+				},
+				"description": "Endpoint público para um novo cliente se registrar. Envia os dados da empresa e do primeiro usuário admin de uma vez. Não requer token JWT."
+			},
+			"response": [
+				{
+					"name": "Exemplo Sucesso",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"razaoSocial\": \"Empresa Auto Registro LTDA\",\n    \"nomeFantasia\": \"Auto Registro Transp\",\n    \"cnpj\": \"77889900000144\",\n    \"adminNome\": \"Admin Auto Registrado\",\n    \"adminSenha\": \"senhaAutoRegistro123\",\n    \"adminCpf\": \"44455566677\",\n    \"adminEmail\": \"admin@autoregistro.com\",\n    \"adminDataNascimento\": \"1992-02-02\",\n    \"adminTelefone\": \"11944443333\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/public/register"
+						}
+					},
+					"status": "Created",
+					"code": 201,
+					"_postman_previewlanguage": "text",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "text/plain;charset=UTF-8"
+						}
+					],
+					"cookie": [],
+					"body": "Registro realizado com sucesso! Você já pode fazer login."
+				},
+				{
+					"name": "Exemplo Falha (CNPJ Duplicado)",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"razaoSocial\": \"Empresa Auto Registro LTDA\",\n    \"nomeFantasia\": \"Auto Registro Transp\",\n    \"cnpj\": \"12345678000190\",\n    \"adminNome\": \"Admin Auto Registrado\",\n    \"adminSenha\": \"senhaAutoRegistro123\",\n    \"adminCpf\": \"44455566677\",\n    \"adminEmail\": \"admin@autoregistro.com\",\n    \"adminDataNascimento\": \"1992-02-02\",\n    \"adminTelefone\": \"11944443333\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/public/register"
+						}
+					},
+					"status": "Conflict",
+					"code": 409,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"timestamp\": \"2025-10-18T15:10:00.000+00:00\",\n    \"status\": 409,\n    \"error\": \"Conflict\",\n    \"message\": \"Conflito: Já existe uma empresa cadastrada com o CNPJ 12.345.678/0001-90.\",\n    \"path\": \"/api/public/register\"\n}"
+				},
+				{
+					"name": "Exemplo Falha (CPF Duplicado)",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"razaoSocial\": \"Empresa Auto Registro LTDA\",\n    \"nomeFantasia\": \"Auto Registro Transp\",\n    \"cnpj\": \"77889900000144\",\n    \"adminNome\": \"Admin Auto Registrado\",\n    \"adminSenha\": \"senhaAutoRegistro123\",\n    \"adminCpf\": \"12345678901\",\n    \"adminEmail\": \"admin@autoregistro.com\",\n    \"adminDataNascimento\": \"1992-02-02\",\n    \"adminTelefone\": \"11944443333\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/public/register"
+						}
+					},
+					"status": "Conflict",
+					"code": 409,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"timestamp\": \"2025-10-18T15:11:00.000+00:00\",\n    \"status\": 409,\n    \"error\": \"Conflict\",\n    \"message\": \"Conflito: Já existe um usuário cadastrado com o CPF 12345678901.\",\n    \"path\": \"/api/public/register\"\n}"
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "noauth"
+	}
+}

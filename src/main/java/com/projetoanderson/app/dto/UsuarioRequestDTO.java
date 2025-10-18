@@ -32,10 +32,6 @@ public class UsuarioRequestDTO {
 
 	private String telefone;
 	
-	@NotNull(message="O id da empresa precisa ser válido.")
-	private Long empresa;
-
-	
 	public String getNome() {
 		return nome;
 	}
@@ -59,9 +55,5 @@ public class UsuarioRequestDTO {
 	public String getEmail()
 	{
 		return email;
-	}
-
-	public Long getEmpresa() {
-		return empresa;
 	}
 }

@@ -1,13 +1,13 @@
 {
 	"info": {
-		"_postman_id": "2b2b2b2b-2b2b-4b2b-8b2b-final-sep",
-		"name": "2. Empresas",
-		"description": "Coleção para gerenciar os endpoints de Empresas. A autorização JWT é herdada para todas as requisições. Contém respostas de exemplo (mocks).",
+		"_postman_id": "2b2b2b2b-2b2b-4b2b-8b2b-final-sep-centralized-patch",
+		"name": "2. Empresas (Centralizado com PATCH)",
+		"description": "Coleção para gerenciar Empresas. USA O ENDPOINT CENTRALIZADO /api/empresas PARA CRIAÇÃO (comportamento depende da role). Usa PATCH para atualizações parciais. A autorização JWT é herdada.",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
 		{
-			"name": "GET Listar Empresas (Retorna apenas a do usuário logado)",
+			"name": "GET Listar Empresas (SuperAdmin: Todas, Outros: Própria)",
 			"request": {
 				"method": "GET",
 				"header": [],
@@ -21,11 +21,11 @@
 						"empresas"
 					]
 				},
-				"description": "Valida a listagem da empresa do usuário logado."
+				"description": "Lista empresas. Super Admin vê todas. Admin Cliente e Motorista veem apenas a sua própria empresa."
 			},
 			"response": [
 				{
-					"name": "Exemplo de Resposta de Sucesso",
+					"name": "Exemplo Resposta (Admin Cliente)",
 					"originalRequest": {
 						"method": "GET",
 						"header": [],
@@ -43,36 +43,15 @@
 						}
 					],
 					"cookie": [],
-					"body": "[\n    {\n        \"id\": 1,\n        \"razaoSocial\": \"Transportadora Rápida Ltda\",\n        \"nomeFantasia\": \"Rápida Transportes\",\n        \"cnpj\": \"12345678000190\"\n    }\n]"
-				}
-			]
-		},
-		{
-			"name": "GET Buscar Empresa por ID (Própria Empresa)",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "{{baseUrl}}/api/empresas/1",
-					"host": [
-						"{{baseUrl}}"
-					],
-					"path": [
-						"api",
-						"empresas",
-						"1"
-					]
+					"body": "[\n    {\n        \"id\": 2,\n        \"razaoSocial\": \"Transportadora Rápida Ltda\",\n        \"nomeFantasia\": \"Rápida Transportes\",\n        \"cnpj\": \"12345678000190\"\n    }\n]"
 				},
-				"description": "Valida a busca da empresa específica do usuário logado (ex: ID 1)."
-			},
-			"response": [
 				{
-					"name": "Exemplo de Resposta de Sucesso",
+					"name": "Exemplo Resposta (Super Admin)",
 					"originalRequest": {
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/api/empresas/1"
+							"raw": "{{baseUrl}}/api/empresas"
 						}
 					},
 					"status": "OK",
@@ -85,18 +64,60 @@
 						}
 					],
 					"cookie": [],
-					"body": "{\n    \"id\": 1,\n    \"razaoSocial\": \"Transportadora Rápida Ltda\",\n    \"nomeFantasia\": \"Rápida Transportes\",\n    \"cnpj\": \"12345678000190\"\n}"
+					"body": "[\n    {\n        \"id\": 1, \n        \"razaoSocial\": \"Sistema Interno Admin\", \n        \"nomeFantasia\": \"Sistema\", \n        \"cnpj\": \"00000000000000\"\n    },\n    {\n        \"id\": 2,\n        \"razaoSocial\": \"Transportadora Rápida Ltda\",\n        \"nomeFantasia\": \"Rápida Transportes\",\n        \"cnpj\": \"12345678000190\"\n    },\n    {\n        \"id\": 3,\n        \"razaoSocial\": \"Logística Express S.A.\",\n        \"nomeFantasia\": \"Express Log\",\n        \"cnpj\": \"98765432000111\"\n    }\n]"
 				}
 			]
 		},
 		{
-			"name": "[CLIENTE ADMIN] POST Criar Empresa (Espera 403)",
+			"name": "GET Buscar Empresa por ID",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/empresas/2",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"empresas",
+						"2"
+					]
+				},
+				"description": "Busca uma empresa específica pelo ID. Super Admin pode buscar qualquer ID. Admin Cliente só pode buscar o ID da sua própria empresa (caso contrário, recebe 403 Forbidden)."
+			},
+			"response": [
+				{
+					"name": "Exemplo de Resposta de Sucesso",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/empresas/2"
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"id\": 2,\n    \"razaoSocial\": \"Transportadora Rápida Ltda\",\n    \"nomeFantasia\": \"Rápida Transportes\",\n    \"cnpj\": \"12345678000190\"\n}"
+				}
+			]
+		},
+		{
+			"name": "POST Criar Empresa (Super Admin: OK, Cliente Admin: 403)",
 			"request": {
 				"method": "POST",
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n  \"razaoSocial\": \"Nova Empresa Teste LTDA\",\n  \"nomeFantasia\": \"NET Transportes\",\n  \"cnpj\": \"11223344000155\"\n}",
+					"raw": "{\n  \"razaoSocial\": \"Empresa Teste Centralizada LTDA\",\n  \"nomeFantasia\": \"Teste Centralizado\",\n  \"cnpj\": \"44556677000188\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -113,17 +134,42 @@
 						"empresas"
 					]
 				},
-				"description": "Este endpoint agora é bloqueado para admins de clientes. Espera-se um 403 Forbidden. Use o endpoint [SUPER ADMIN] para criar empresas."
+				"description": "Endpoint centralizado para criar empresas. \n- Se logado como SUPER ADMIN: Cria a empresa (retorna 201) ou retorna 409 se CNPJ duplicado.\n- Se logado como ADMIN CLIENTE (ou qualquer outro): Retorna 403 Forbidden."
 			},
 			"response": [
 				{
-					"name": "Exemplo de Resposta de Falha (Acesso Negado)",
+					"name": "Exemplo Sucesso (Super Admin)",
 					"originalRequest": {
 						"method": "POST",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"razaoSocial\": \"Nova Empresa Teste LTDA\",\n  \"nomeFantasia\": \"NET Transportes\",\n  \"cnpj\": \"11223344000155\"\n}"
+							"raw": "{\n  \"razaoSocial\": \"Empresa Teste Centralizada LTDA\",\n  \"nomeFantasia\": \"Teste Centralizado\",\n  \"cnpj\": \"44556677000188\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/empresas"
+						}
+					},
+					"status": "Created",
+					"code": 201,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"id\": 4,\n    \"razaoSocial\": \"Empresa Teste Centralizada LTDA\",\n    \"nomeFantasia\": \"Teste Centralizado\",\n    \"cnpj\": \"44556677000188\"\n}"
+				},
+				{
+					"name": "Exemplo Falha (Admin Cliente)",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"razaoSocial\": \"Empresa Teste Centralizada LTDA\",\n  \"nomeFantasia\": \"Teste Centralizado\",\n  \"cnpj\": \"44556677000188\"\n}"
 						},
 						"url": {
 							"raw": "{{baseUrl}}/api/empresas"
@@ -139,53 +185,23 @@
 						}
 					],
 					"cookie": [],
-					"body": "{\n    \"timestamp\": \"2025-10-18T14:30:00.000+00:00\",\n    \"status\": 403,\n    \"error\": \"Forbidden\",\n    \"message\": \"Usuários não têm permissão para criar novas empresas.\",\n    \"path\": \"/api/empresas\"\n}"
-				}
-			]
-		},
-		{
-			"name": "[SUPER ADMIN] POST Criar Empresa",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n  \"razaoSocial\": \"Cliente Novo LTDA\",\n  \"nomeFantasia\": \"Cliente Novo Transportes\",\n  \"cnpj\": \"33445566000177\"\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
+					"body": "{\n    \"timestamp\": \"2025-10-18T15:00:00.000+00:00\",\n    \"status\": 403,\n    \"error\": \"Forbidden\",\n    \"message\": \"Apenas o Super Administrador pode criar novas empresas.\",\n    \"path\": \"/api/empresas\"\n}"
 				},
-				"url": {
-					"raw": "{{baseUrl}}/api/admin/empresas",
-					"host": [
-						"{{baseUrl}}"
-					],
-					"path": [
-						"api",
-						"admin",
-						"empresas"
-					]
-				},
-				"description": "Cria uma nova empresa no sistema. Requer um token de usuário com `ROLE_SUPER_ADMIN`."
-			},
-			"response": [
 				{
-					"name": "Exemplo de Resposta de Sucesso (Super Admin)",
+					"name": "Exemplo Falha (CNPJ Duplicado - Super Admin)",
 					"originalRequest": {
 						"method": "POST",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"razaoSocial\": \"Cliente Novo LTDA\",\n  \"nomeFantasia\": \"Cliente Novo Transportes\",\n  \"cnpj\": \"33445566000177\"\n}"
+							"raw": "{\n  \"razaoSocial\": \"Outra Empresa\",\n  \"nomeFantasia\": \"Outra\",\n  \"cnpj\": \"12345678000190\"\n}"
 						},
 						"url": {
-							"raw": "{{baseUrl}}/api/admin/empresas"
+							"raw": "{{baseUrl}}/api/empresas"
 						}
 					},
-					"status": "Created",
-					"code": 201,
+					"status": "Conflict",
+					"code": 409,
 					"_postman_previewlanguage": "json",
 					"header": [
 						{
@@ -194,18 +210,18 @@
 						}
 					],
 					"cookie": [],
-					"body": "{\n    \"id\": 3,\n    \"razaoSocial\": \"Cliente Novo LTDA\",\n    \"nomeFantasia\": \"Cliente Novo Transportes\",\n    \"cnpj\": \"33445566000177\"\n}"
+					"body": "{\n    \"timestamp\": \"2025-10-18T15:01:00.000+00:00\",\n    \"status\": 409,\n    \"error\": \"Conflict\",\n    \"message\": \"Conflito: Já existe uma empresa cadastrada com o CNPJ 12.345.678/0001-90.\",\n    \"path\": \"/api/empresas\"\n}"
 				}
 			]
 		},
 		{
-			"name": "PUT Atualizar Empresa (Própria Empresa)",
+			"name": "PATCH Atualizar Empresa (Parcial)",
 			"request": {
-				"method": "PUT",
+				"method": "PATCH",
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n  \"razaoSocial\": \"Transportadora Rápida Global Ltda\",\n  \"nomeFantasia\": \"Rápida Transportes Global\",\n  \"cnpj\": \"12345678000190\"\n}",
+					"raw": "{\n  \"nomeFantasia\": \"Nome Fantasia Atualizado via PATCH\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -213,30 +229,30 @@
 					}
 				},
 				"url": {
-					"raw": "{{baseUrl}}/api/empresas/1",
+					"raw": "{{baseUrl}}/api/empresas/2",
 					"host": [
 						"{{baseUrl}}"
 					],
 					"path": [
 						"api",
 						"empresas",
-						"1"
+						"2"
 					]
 				},
-				"description": "Valida a atualização dos dados da própria empresa do usuário logado (ex: ID 1)."
+				"description": "Atualiza PARCIALMENTE os dados de uma empresa. Envie apenas os campos que mudaram. \n- Super Admin pode atualizar qualquer ID.\n- Admin Cliente só pode atualizar o ID da sua própria empresa (caso contrário, recebe 403 Forbidden)."
 			},
 			"response": [
 				{
 					"name": "Exemplo de Resposta de Sucesso",
 					"originalRequest": {
-						"method": "PUT",
+						"method": "PATCH",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"razaoSocial\": \"Transportadora Rápida Global Ltda\",\n  \"nomeFantasia\": \"Rápida Transportes Global\",\n  \"cnpj\": \"12345678000190\"\n}"
+							"raw": "{\n  \"nomeFantasia\": \"Nome Fantasia Atualizado via PATCH\"\n}"
 						},
 						"url": {
-							"raw": "{{baseUrl}}/api/empresas/1"
+							"raw": "{{baseUrl}}/api/empresas/2"
 						}
 					},
 					"status": "OK",
@@ -249,27 +265,27 @@
 						}
 					],
 					"cookie": [],
-					"body": "{\n    \"id\": 1,\n    \"razaoSocial\": \"Transportadora Rápida Global Ltda\",\n    \"nomeFantasia\": \"Rápida Transportes Global\",\n    \"cnpj\": \"12345678000190\"\n}"
+					"body": "{\n    \"id\": 2,\n    \"razaoSocial\": \"Transportadora Rápida Ltda\",\n    \"nomeFantasia\": \"Nome Fantasia Atualizado via PATCH\",\n    \"cnpj\": \"12345678000190\"\n}"
 				}
 			]
 		},
 		{
-			"name": "DELETE Deletar Empresa (Própria Empresa)",
+			"name": "DELETE Deletar Empresa",
 			"request": {
 				"method": "DELETE",
 				"header": [],
 				"url": {
-					"raw": "{{baseUrl}}/api/empresas/3",
+					"raw": "{{baseUrl}}/api/empresas/4",
 					"host": [
 						"{{baseUrl}}"
 					],
 					"path": [
 						"api",
 						"empresas",
-						"3"
+						"4"
 					]
 				},
-				"description": "Valida a remoção da própria empresa (ex: ID 3, criada no teste de SUPER ADMIN POST). Note que um admin de cliente só pode deletar a *sua própria* empresa."
+				"description": "Deleta uma empresa pelo ID. \n- Super Admin pode deletar qualquer ID.\n- Admin Cliente só pode deletar o ID da sua própria empresa (caso contrário, recebe 403 Forbidden)."
 			},
 			"response": [
 				{
@@ -278,7 +294,7 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/api/empresas/3"
+							"raw": "{{baseUrl}}/api/empresas/4"
 						}
 					},
 					"status": "No Content",

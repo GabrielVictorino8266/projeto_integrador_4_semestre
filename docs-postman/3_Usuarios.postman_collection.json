@@ -1,8 +1,8 @@
 {
 	"info": {
-		"_postman_id": "3c3c3c3c-3c3c-4c3c-8c3c-final-sep",
-		"name": "3. Usuários",
-		"description": "Coleção para gerenciar os endpoints de Usuários. A autorização JWT é herdada. Contém respostas de exemplo (mocks) e validações multi-empresa.",
+		"_postman_id": "3c3c3c3c-3c3c-4c3c-8c3c-final-sep-centralized-patch",
+		"name": "3. Usuários (Admin com PATCH)",
+		"description": "Coleção para gerenciar Usuários. Usa PATCH para atualizações parciais. A autorização JWT é herdada. Contém endpoint separado para SUPER ADMIN criar admins de clientes (/api/admin/usuarios).",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
@@ -43,7 +43,7 @@
 						}
 					],
 					"cookie": [],
-					"body": "[\n    {\n        \"id\": 1,\n        \"nome\": \"João Silva\",\n        \"email\": \"joao.silva@rapida.com.br\",\n        \"cpf\": \"12345678901\",\n        \"dataNascimento\": \"1985-03-15\",\n        \"telefone\": \"11987654321\",\n        \"empresa\": 1\n    },\n    {\n        \"id\": 2,\n        \"nome\": \"Carlos Santos\",\n        \"email\": \"carlos.santos@rapida.com.br\",\n        \"cpf\": \"23456789012\",\n        \"dataNascimento\": \"1990-07-22\",\n        \"telefone\": \"11976543210\",\n        \"empresa\": 1\n    }\n]"
+					"body": "[\n    {\n        \"id\": 2,\n        \"nome\": \"João Silva (Admin)\",\n        \"email\": \"joao.silva@rapida.com.br\",\n        \"cpf\": \"12345678901\",\n        \"dataNascimento\": \"1985-03-15\",\n        \"telefone\": \"11987654321\",\n        \"empresaId\": 2\n    },\n    {\n        \"id\": 3,\n        \"nome\": \"Carlos Santos (Motorista)\",\n        \"email\": \"carlos.santos@rapida.com.br\",\n        \"cpf\": \"23456789012\",\n        \"dataNascimento\": \"1990-07-22\",\n        \"telefone\": \"11976543210\",\n        \"empresaId\": 2\n    }\n]"
 				}
 			]
 		},
@@ -53,17 +53,17 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{baseUrl}}/api/usuarios/2",
+					"raw": "{{baseUrl}}/api/usuarios/3",
 					"host": [
 						"{{baseUrl}}"
 					],
 					"path": [
 						"api",
 						"usuarios",
-						"2"
+						"3"
 					]
 				},
-				"description": "Busca um usuário específico pelo ID, validando se ele pertence à empresa do usuário autenticado."
+				"description": "Busca um usuário específico pelo ID, validando se ele pertence à empresa do usuário autenticado (retorna 404/403 se não)."
 			},
 			"response": [
 				{
@@ -72,7 +72,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/api/usuarios/2"
+							"raw": "{{baseUrl}}/api/usuarios/3"
 						}
 					},
 					"status": "OK",
@@ -85,7 +85,7 @@
 						}
 					],
 					"cookie": [],
-					"body": "{\n    \"id\": 2,\n    \"nome\": \"Carlos Santos\",\n    \"email\": \"carlos.santos@rapida.com.br\",\n    \"cpf\": \"23456789012\",\n    \"dataNascimento\": \"1990-07-22\",\n    \"telefone\": \"11976543210\",\n    \"empresa\": 1\n}"
+					"body": "{\n    \"id\": 3,\n    \"nome\": \"Carlos Santos (Motorista)\",\n    \"email\": \"carlos.santos@rapida.com.br\",\n    \"cpf\": \"23456789012\",\n    \"dataNascimento\": \"1990-07-22\",\n    \"telefone\": \"11976543210\",\n    \"empresaId\": 2\n}"
 				}
 			]
 		},
@@ -133,7 +133,7 @@
 						}
 					],
 					"cookie": [],
-					"body": "{\n    \"id\": 1,\n    \"nome\": \"João Silva\",\n    \"email\": \"joao.silva@rapida.com.br\",\n    \"cpf\": \"12345678901\",\n    \"dataNascimento\": \"1985-03-15\",\n    \"telefone\": \"11987654321\",\n    \"empresa\": 1\n}"
+					"body": "{\n    \"id\": 2,\n    \"nome\": \"João Silva (Admin)\",\n    \"email\": \"joao.silva@rapida.com.br\",\n    \"cpf\": \"12345678901\",\n    \"dataNascimento\": \"1985-03-15\",\n    \"telefone\": \"11987654321\",\n    \"empresaId\": 2\n}"
 				}
 			]
 		},
@@ -144,7 +144,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"nome\": \"Novo Colaborador\",\n    \"senha\": \"senhaSegura456\",\n    \"cpf\": \"10101010101\",\n    \"email\": \"novo.colaborador@rapida.com.br\",\n    \"dataNascimento\": \"1998-11-10\",\n    \"telefone\": \"11900001111\"\n}",
+					"raw": "{\n    \"nome\": \"Novo Motorista\",\n    \"senha\": \"senhaMotorista789\",\n    \"cpf\": \"10101010101\",\n    \"email\": \"novo.motorista@rapida.com.br\",\n    \"dataNascimento\": \"1998-11-10\",\n    \"telefone\": \"11900001111\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -161,7 +161,7 @@
 						"usuarios"
 					]
 				},
-				"description": "Cria um novo usuário, garantindo que ele seja associado à empresa do usuário autenticado."
+				"description": "Admin Cliente usa este endpoint para criar novos usuários (ex: Motoristas) DENTRO da sua própria empresa. A empresa é associada automaticamente."
 			},
 			"response": [
 				{
@@ -171,7 +171,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"nome\": \"Novo Colaborador\",\n    \"senha\": \"senhaSegura456\",\n    \"cpf\": \"10101010101\",\n    \"email\": \"novo.colaborador@rapida.com.br\",\n    \"dataNascimento\": \"1998-11-10\",\n    \"telefone\": \"11900001111\"\n}"
+							"raw": "{\n    \"nome\": \"Novo Motorista\",\n    \"senha\": \"senhaMotorista789\",\n    \"cpf\": \"10101010101\",\n    \"email\": \"novo.motorista@rapida.com.br\",\n    \"dataNascimento\": \"1998-11-10\",\n    \"telefone\": \"11900001111\"\n}"
 						},
 						"url": {
 							"raw": "{{baseUrl}}/api/usuarios"
@@ -187,7 +187,7 @@
 						}
 					],
 					"cookie": [],
-					"body": "{\n    \"id\": 5,\n    \"nome\": \"Novo Colaborador\",\n    \"email\": \"novo.colaborador@rapida.com.br\",\n    \"cpf\": \"10101010101\",\n    \"dataNascimento\": \"1998-11-10\",\n    \"telefone\": \"11900001111\",\n    \"empresa\": 1\n}"
+					"body": "{\n    \"id\": 6,\n    \"nome\": \"Novo Motorista\",\n    \"email\": \"novo.motorista@rapida.com.br\",\n    \"cpf\": \"10101010101\",\n    \"dataNascimento\": \"1998-11-10\",\n    \"telefone\": \"11900001111\",\n    \"empresaId\": 2\n}"
 				}
 			]
 		},
@@ -198,7 +198,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"nome\": \"Admin da Nova Empresa\",\n    \"senha\": \"senhaSeguraCliente123\",\n    \"cpf\": \"11122233344\",\n    \"email\": \"admin@novaempresa.com\",\n    \"dataNascimento\": \"1990-01-01\",\n    \"telefone\": \"11988887777\",\n    \"empresaId\": 3 \n}",
+					"raw": "{\n    \"nome\": \"Admin da Nova Empresa Cliente\",\n    \"senha\": \"senhaCliente123\",\n    \"cpf\": \"11122233344\",\n    \"email\": \"admin@novaempresa.com\",\n    \"dataNascimento\": \"1990-01-01\",\n    \"telefone\": \"11988887777\",\n    \"empresaId\": 4 \n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -216,7 +216,7 @@
 						"usuarios"
 					]
 				},
-				"description": "Cria o primeiro usuário (Admin) para uma empresa recém-criada. Requer token de SUPER_ADMIN. O 'empresaId' deve ser o ID da empresa criada."
+				"description": "**EXCLUSIVO PARA SUPER ADMIN.** Cria o primeiro usuário (Admin) para uma empresa recém-criada (ou qualquer empresa existente). Requer token de SUPER_ADMIN. O 'empresaId' no corpo indica para qual empresa o usuário será criado."
 			},
 			"response": [
 				{
@@ -226,7 +226,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"nome\": \"Admin da Nova Empresa\",\n    \"senha\": \"senhaSeguraCliente123\",\n    \"cpf\": \"11122233344\",\n    \"email\": \"admin@novaempresa.com\",\n    \"dataNascimento\": \"1990-01-01\",\n    \"telefone\": \"11988887777\",\n    \"empresaId\": 3 \n}",
+							"raw": "{\n    \"nome\": \"Admin da Nova Empresa Cliente\",\n    \"senha\": \"senhaCliente123\",\n    \"cpf\": \"11122233344\",\n    \"email\": \"admin@novaempresa.com\",\n    \"dataNascimento\": \"1990-01-01\",\n    \"telefone\": \"11988887777\",\n    \"empresaId\": 4 \n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -247,18 +247,18 @@
 						}
 					],
 					"cookie": [],
-					"body": "Usuário Admin criado com sucesso para a empresa ID: 3"
+					"body": "Usuário Admin criado com sucesso para a empresa ID: 4"
 				}
 			]
 		},
 		{
-			"name": "PUT Atualizar Usuário (Da Própria Empresa)",
+			"name": "PATCH Atualizar Usuário (Parcial)",
 			"request": {
-				"method": "PUT",
+				"method": "PATCH",
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"nome\": \"Carlos Santos Silva Atualizado\",\n    \"senha\": \"\",\n    \"cpf\": \"23456789012\",\n    \"email\": \"carlos.santos.update@rapida.com.br\",\n    \"dataNascimento\": \"1990-07-22\",\n    \"telefone\": \"11977778888\",\n    \"empresa\": 1\n}",
+					"raw": "{\n    \"nome\": \"Carlos Motorista Atualizado PATCH\",\n    \"telefone\": \"11977770000\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -266,30 +266,30 @@
 					}
 				},
 				"url": {
-					"raw": "{{baseUrl}}/api/usuarios/2",
+					"raw": "{{baseUrl}}/api/usuarios/3",
 					"host": [
 						"{{baseUrl}}"
 					],
 					"path": [
 						"api",
 						"usuarios",
-						"2"
+						"3"
 					]
 				},
-				"description": "Atualiza um usuário existente (ex: ID 2), validando se ele pertence à empresa do usuário autenticado."
+				"description": "Atualiza PARCIALMENTE um usuário existente (ex: ID 3). Envie apenas os campos que mudaram. Valida se ele pertence à empresa do usuário autenticado. Deixe a senha vazia ou omita para não alterá-la."
 			},
 			"response": [
 				{
 					"name": "Exemplo de Resposta de Sucesso",
 					"originalRequest": {
-						"method": "PUT",
+						"method": "PATCH",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"nome\": \"Carlos Santos Silva Atualizado\",\n    \"senha\": \"\",\n    \"cpf\": \"23456789012\",\n    \"email\": \"carlos.santos.update@rapida.com.br\",\n    \"dataNascimento\": \"1990-07-22\",\n    \"telefone\": \"11977778888\",\n    \"empresa\": 1\n}"
+							"raw": "{\n    \"nome\": \"Carlos Motorista Atualizado PATCH\",\n    \"telefone\": \"11977770000\"\n}"
 						},
 						"url": {
-							"raw": "{{baseUrl}}/api/usuarios/2"
+							"raw": "{{baseUrl}}/api/usuarios/3"
 						}
 					},
 					"status": "OK",
@@ -302,7 +302,7 @@
 						}
 					],
 					"cookie": [],
-					"body": "{\n    \"id\": 2,\n    \"nome\": \"Carlos Santos Silva Atualizado\",\n    \"email\": \"carlos.santos.update@rapida.com.br\",\n    \"cpf\": \"23456789012\",\n    \"dataNascimento\": \"1990-07-22\",\n    \"telefone\": \"11977778888\",\n    \"empresa\": 1\n}"
+					"body": "{\n    \"id\": 3,\n    \"nome\": \"Carlos Motorista Atualizado PATCH\",\n    \"email\": \"carlos.santos@rapida.com.br\",\n    \"cpf\": \"23456789012\",\n    \"dataNascimento\": \"1990-07-22\",\n    \"telefone\": \"11977770000\",\n    \"empresaId\": 2\n}"
 				}
 			]
 		},
@@ -312,17 +312,17 @@
 				"method": "DELETE",
 				"header": [],
 				"url": {
-					"raw": "{{baseUrl}}/api/usuarios/5",
+					"raw": "{{baseUrl}}/api/usuarios/6",
 					"host": [
 						"{{baseUrl}}"
 					],
 					"path": [
 						"api",
 						"usuarios",
-						"5"
+						"6"
 					]
 				},
-				"description": "Deleta um usuário (ex: ID 5, criado no teste de POST), validando se ele pertence à empresa do usuário autenticado."
+				"description": "Deleta um usuário (ex: ID 6, criado no teste de POST), validando se ele pertence à empresa do usuário autenticado."
 			},
 			"response": [
 				{
@@ -331,7 +331,7 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/api/usuarios/5"
+							"raw": "{{baseUrl}}/api/usuarios/6"
 						}
 					},
 					"status": "No Content",
