@@ -1,7 +1,9 @@
 package com.projetoanderson.app.model.entity;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
+import org.hibernate.annotations.UuidGenerator;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -13,6 +15,10 @@ import jakarta.persistence.MappedSuperclass;
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
 public class Auditoria {
+	
+	@UuidGenerator(style = UuidGenerator.Style.AUTO)
+	@Column(name="uuid", nullable=false, updatable=false, unique=true, columnDefinition = "UUID")
+	private UUID uuid;
 	
 	@CreatedDate
 	@Column(name="criado_em", nullable=false, updatable=false)
