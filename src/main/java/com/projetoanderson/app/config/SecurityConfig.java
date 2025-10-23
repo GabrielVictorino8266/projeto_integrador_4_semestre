@@ -60,6 +60,7 @@ public class SecurityConfig {
     public SecurityFilterChain securedEndpoints(HttpSecurity http) throws Exception {
         http
             .authorizeHttpRequests(auth -> auth.anyRequest().authenticated())
+            .httpBasic(Customizer.withDefaults()) 
             .oauth2ResourceServer(oauth2 -> oauth2
                 .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter)))
             .csrf(AbstractHttpConfigurer::disable)
