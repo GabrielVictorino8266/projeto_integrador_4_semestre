@@ -8,11 +8,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -37,58 +39,64 @@ public class SecurityConfig {
 	private RSAPublicKey key;
 	@Value("${jwt.private.key}")
 	private RSAPrivateKey priv;
-	
+
 	@Autowired
-    private Converter<Jwt, ? extends AbstractAuthenticationToken> jwtAuthenticationConverter;
-	
-	@Bean
-	SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-		http
-            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-            .csrf(csrf -> csrf.disable()) 
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/authenticate").permitAll()
-                .requestMatchers("/api/public/register").permitAll()
-                .anyRequest().authenticated()
-            )
-            .httpBasic(Customizer.withDefaults()) 
-            .oauth2ResourceServer(conf -> conf
-                .jwt(jwt -> jwt
-                    .jwtAuthenticationConverter(jwtAuthenticationConverter) 
-                )
-            );
-		
-		return http.build();
-	}
+	private Converter<Jwt, ? extends AbstractAuthenticationToken> jwtAuthenticationConverter;
+
+	    @Bean
+    @Order(1)
+    public SecurityFilterChain publicEndpoints(HttpSecurity http) throws Exception {
+        http
+            .securityMatcher("/api/public/**", "/error", "/error/**", "/actuator/health", "/actuator/info")
+            .authorizeHttpRequests(auth -> auth.anyRequest().permitAll())
+            .csrf(AbstractHttpConfigurer::disable)
+            .cors(Customizer.withDefaults());
+
+        return http.build();
+    }
+
+    @Bean
+    @Order(2)
+    public SecurityFilterChain securedEndpoints(HttpSecurity http) throws Exception {
+        http
+            .authorizeHttpRequests(auth -> auth.anyRequest().authenticated())
+            .oauth2ResourceServer(oauth2 -> oauth2
+                .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter)))
+            .csrf(AbstractHttpConfigurer::disable)
+            .cors(Customizer.withDefaults());
+
+        return http.build();
+    }
 
 	@Bean
 	CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration configuration = new CorsConfiguration();
-		configuration.setAllowedOrigins(Arrays.asList("http://localhost:8888")); 
-		configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD")); 
-		configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "Cache-Control", "X-Requested-With")); 
-		configuration.setAllowCredentials(true); 
-		
+		configuration.setAllowedOrigins(Arrays.asList("http://localhost:8888"));
+		configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD"));
+		configuration
+				.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "Cache-Control", "X-Requested-With"));
+		configuration.setAllowCredentials(true);
+
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-		source.registerCorsConfiguration("/api/**", configuration); 
+		source.registerCorsConfiguration("/api/**", configuration);
 		return source;
 	}
-	
+
 	@Bean
 	JwtDecoder jwtDecoder() {
 		return NimbusJwtDecoder.withPublicKey(key).build();
 	}
-	
+
 	@Bean
 	JwtEncoder jwtEncoder() {
 		var jwk = new RSAKey.Builder(key).privateKey(priv).build();
 		var jwks = new ImmutableJWKSet<>(new JWKSet(jwk));
 		return new NimbusJwtEncoder(jwks);
 	}
-	
+
 	@Bean
 	PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
 	}
- 	
+
 }
