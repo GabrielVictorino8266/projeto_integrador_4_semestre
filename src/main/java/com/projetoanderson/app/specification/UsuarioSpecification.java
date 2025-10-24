@@ -16,21 +16,31 @@ public class UsuarioSpecification {
         return (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
 
+            // Empresa filter - always AND
             if (idEmpresaEspecifica != null) {
                 predicates.add(cb.equal(root.get("empresa").get("id"), idEmpresaEspecifica));
             }
 
+            // Other filters - OR between them
+            List<Predicate> orPredicates = new ArrayList<>();
+
             if (StringUtils.hasText(nome)) {
-                predicates.add(cb.like(cb.lower(root.get("nome")), "%" + nome.toLowerCase() + "%"));
+                orPredicates.add(cb.like(cb.lower(root.get("nome")), "%" + nome.toLowerCase() + "%"));
             }
             if (StringUtils.hasText(email)) {
-                predicates.add(cb.like(cb.lower(root.get("email")), "%" + email.toLowerCase() + "%"));
+                orPredicates.add(cb.like(cb.lower(root.get("email")), "%" + email.toLowerCase() + "%"));
             }
             if (StringUtils.hasText(cpf)) {
                 String cpfNumerico = cpf.replaceAll("[^0-9]", "");
-                if(StringUtils.hasText(cpfNumerico)){
-                   predicates.add(cb.like(root.get("cpf"), "%" + cpfNumerico + "%"));
+                if (StringUtils.hasText(cpfNumerico)) {
+                    orPredicates.add(cb.like(root.get("cpf"), "%" + cpfNumerico + "%"));
                 }
+            }
+
+            // Combine: empresa AND (nome OR email OR cpf)
+            if (!orPredicates.isEmpty()) {
+                Predicate orCombined = cb.or(orPredicates.toArray(new Predicate[0]));
+                predicates.add(orCombined);
             }
 
             return cb.and(predicates.toArray(new Predicate[0]));
@@ -38,6 +48,6 @@ public class UsuarioSpecification {
     }
 
     public static Specification<Usuario> pertenceAEmpresa(Long empresaId) {
-         return (root, query, cb) -> cb.equal(root.get("empresa").get("id"), empresaId);
+        return (root, query, cb) -> cb.equal(root.get("empresa").get("id"), empresaId);
     }
 }
