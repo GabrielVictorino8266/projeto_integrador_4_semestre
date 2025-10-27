@@ -224,6 +224,12 @@ public class UsuarioService {
         return converterParaResponseDTO(usuarioAAtualizar);
     }
 
+    @Transactional(readOnly = true)
+    public UsuarioResponseDTO getUsuarioLogado(){
+        UsuarioAuthenticated usuarioAuth = getUsuarioAutenticado();
+        return converterParaResponseDTO(usuarioAuth.getUsuario());
+    }
+
     private UsuarioResponseDTO converterParaResponseDTO(Usuario usuario) {
         UsuarioResponseDTO dto = new UsuarioResponseDTO();
         dto.setId(usuario.getId());
