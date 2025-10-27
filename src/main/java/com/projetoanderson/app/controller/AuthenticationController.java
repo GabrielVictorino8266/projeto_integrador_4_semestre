@@ -1,10 +1,13 @@
 package com.projetoanderson.app.controller;
 
 import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.projetoanderson.app.service.AuthenticationService;
+import com.projetoanderson.app.dto.UsuarioResponseDTO;
+import org.springframework.http.ResponseEntity;
 
 /**
  * Controlador REST responsável pela autenticação de usuários.
@@ -37,5 +40,12 @@ public class AuthenticationController {
     @PostMapping("/api/authenticate") // MELHORIA: Adicionar barra inicial
     public String authenticate(Authentication authentication){
         return authenticationService.authenticate(authentication);
+    }
+
+    /** Endpoint para obter o usuário autenticado */
+    @GetMapping("/api/auth/usuario")
+    public ResponseEntity<UsuarioResponseDTO> getCurrentUser(){
+        UsuarioResponseDTO usuario = authenticationService.getCurrentUser();
+        return ResponseEntity.ok(usuario);
     }
 }

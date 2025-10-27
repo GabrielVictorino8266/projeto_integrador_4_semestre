@@ -12,11 +12,11 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
 
 import com.projetoanderson.app.dto.UsuarioPatchDTO; // Importar DTO Patch
 import com.projetoanderson.app.dto.UsuarioRequestDTO;
@@ -29,6 +29,8 @@ import com.projetoanderson.app.repository.FuncaoRepository; // Importar
 import com.projetoanderson.app.repository.UsuarioRepository;
 import com.projetoanderson.app.security.UsuarioAuthenticated;
 import com.projetoanderson.app.specification.UsuarioSpecification;
+
+
 
 @Service
 public class UsuarioService {
@@ -175,7 +177,6 @@ public class UsuarioService {
 		return converterParaResponseDTO(usuarioSalvo);
 	}
 
-
     @Transactional
     public UsuarioResponseDTO atualizarUsuarioParcialmente(Long id, UsuarioPatchDTO dto) { // Usa PatchDTO
         validarAcessoUsuario(id);
@@ -222,6 +223,12 @@ public class UsuarioService {
             usuarioAAtualizar = usuarioRepository.save(usuarioAAtualizar);
         }
         return converterParaResponseDTO(usuarioAAtualizar);
+    }
+
+    @Transactional(readOnly = true)
+    public UsuarioResponseDTO getUsuarioLogado(){
+        UsuarioAuthenticated usuarioAuth = getUsuarioAutenticado();
+        return converterParaResponseDTO(usuarioAuth.getUsuario());
     }
 
     private UsuarioResponseDTO converterParaResponseDTO(Usuario usuario) {
