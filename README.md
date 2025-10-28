@@ -38,8 +38,19 @@ cd projeto_integrador_4_semestre
 ./bash/build.sh prod
 ```
 
-* **Estrutura de pastas**
-.
+### Populando o Banco de Dados
+
+##### Inserir 100 usuários de teste
+
+```bash
+bash ./bash/seed_users.sh
+```
+
+> **Observação:** Execute a partir da raiz do projeto com o container rodando.
+
+---
+
+### Estrutura de pastas
 ```md
 ├── bash
 ├── src
@@ -101,3 +112,5 @@ cd projeto_integrador_4_semestre
 │                       └── entity
 └── wrapper
 ```
+
+
