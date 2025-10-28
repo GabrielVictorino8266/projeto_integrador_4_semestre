@@ -39,10 +39,11 @@ public class UsuarioController {
             @RequestParam(required = false) String nome,
             @RequestParam(required = false) String email,
             @RequestParam(required = false) String cpf,
+            @RequestParam(required = false) String telefone,
             @PageableDefault(size = 20, sort = "nome") Pageable pageable){
 
         Page<UsuarioResponseDTO> pagina = usuarioService.buscarTodosComFiltro(
-            nome, email, cpf, pageable);
+            nome, email, cpf, telefone, pageable);
 
         if (pagina.isEmpty()) {
             return ResponseEntity.noContent().build();

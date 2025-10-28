@@ -12,7 +12,7 @@ import jakarta.persistence.criteria.Predicate;
 
 public class UsuarioSpecification {
 
-    public static Specification<Usuario> comFiltros(Long idEmpresaEspecifica, String nome, String email, String cpf) {
+    public static Specification<Usuario> comFiltros(Long idEmpresaEspecifica, String nome, String email, String cpf, String telefone) {
         return (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
 
@@ -34,6 +34,13 @@ public class UsuarioSpecification {
                 String cpfNumerico = cpf.replaceAll("[^0-9]", "");
                 if (StringUtils.hasText(cpfNumerico)) {
                     orPredicates.add(cb.like(root.get("cpf"), "%" + cpfNumerico + "%"));
+                }
+            }
+
+            if (StringUtils.hasText(telefone)) {
+                String telefoneNumerico = telefone.replaceAll("[^0-9]", "");
+                if (StringUtils.hasText(telefoneNumerico)) {
+                    orPredicates.add(cb.like(root.get("telefone"), "%" + telefoneNumerico + "%"));
                 }
             }
 

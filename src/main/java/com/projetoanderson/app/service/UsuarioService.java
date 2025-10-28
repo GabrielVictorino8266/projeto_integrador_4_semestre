@@ -132,12 +132,12 @@ public class UsuarioService {
 
     @Transactional(readOnly = true)
 	public Page<UsuarioResponseDTO> buscarTodosComFiltro(
-            String nome, String email, String cpf, Pageable pageable) {
+            String nome, String email, String cpf, String telefone, Pageable pageable) {
 
         Long idEmpresaEspecifica = getIdEmpresaUsuarioLogadoOuNull(); // Null se for Super Admin
 
         Specification<Usuario> spec = UsuarioSpecification.comFiltros(
-            idEmpresaEspecifica, nome, email, cpf
+            idEmpresaEspecifica, nome, email, cpf, telefone
         );
 
         Page<Usuario> paginaUsuarios = usuarioRepository.findAll(spec, pageable);
