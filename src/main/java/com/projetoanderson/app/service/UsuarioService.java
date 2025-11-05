@@ -24,6 +24,7 @@ import com.projetoanderson.app.dto.UsuarioResponseDTO; // Assumindo que existe
 import com.projetoanderson.app.model.entity.Empresa;
 import com.projetoanderson.app.model.entity.Funcao;
 import com.projetoanderson.app.model.entity.Usuario;
+import com.projetoanderson.app.model.entity.enums.TipoPlano;
 import com.projetoanderson.app.repository.EmpresaRepository; // Importar
 import com.projetoanderson.app.repository.FuncaoRepository; // Importar
 import com.projetoanderson.app.repository.UsuarioRepository;
@@ -91,6 +92,15 @@ public class UsuarioService {
 
         if (!usuarioAlvo.getEmpresa().getId().equals(empresaIdUsuarioLogado)) {
              throw new AccessDeniedException("Acesso negado. Você não pode gerenciar usuários de outra empresa.");
+        }
+    }
+    
+    private void validarLimiteDeUsuarios(Empresa empresa) {
+        if (empresa.getTipoPlano() == TipoPlano.GRATUITO) {
+            long contagemAtual = usuarioRepository.countByEmpresaId(empresa.getId());
+            if (contagemAtual >= 5) { // Seu limite de 5
+                throw new ResponseStatusException(HttpStatus.CONFLICT, "Limite de 5 usuários atingido para o plano gratuito.");
+            }
         }
     }
 

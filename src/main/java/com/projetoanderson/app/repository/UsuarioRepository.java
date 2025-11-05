@@ -35,6 +35,8 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long>, JpaSpec
     List<Usuario> findAllByEmpresaId(Long empresaId);
 
     List<Usuario> findByNomeContainingIgnoreCaseAndEmpresaId(String nome, Long empresaId);
+    
+    long countByEmpresaId(Long empresaId);
 
     boolean existsByCpfAndEmpresaId(String cpf, Long empresaId);
     boolean existsByEmailAndEmpresaId(String email, Long empresaId);

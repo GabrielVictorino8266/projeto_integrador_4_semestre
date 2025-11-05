@@ -1,0 +1,631 @@
+{
+	"info": {
+		"_postman_id": "a1b2c3d4-e5f6-4a7b-8c9d-1234567890ab",
+		"name": "Projeto Integrador 4 Semestre - API Completa",
+		"description": "Coleção unificada contendo todos os endpoints do projeto, incluindo autenticação, gerenciamento e pagamentos.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "1. Autenticação",
+			"description": "Obtenha o Token JWT. Salva automaticamente na variável de ambiente `jwt_token`.",
+			"item": [
+				{
+					"name": "POST Authenticate (Admin Cliente)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const token = pm.response.text();",
+									"if (token) {",
+									"    pm.environment.set(\"jwt_token\", token);",
+									"    console.log(\"Token JWT (Admin Cliente) salvo!\");",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "admin123"
+								},
+								{
+									"key": "username",
+									"value": "12345678901"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/authenticate",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"authenticate"
+							]
+						},
+						"description": "Usa as credenciais do DataLoader: joao.silva@rapida.com.br (CPF: 12345678901), Senha: admin123"
+					},
+					"response": []
+				},
+				{
+					"name": "POST Authenticate (Super Admin)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const token = pm.response.text();",
+									"if (token) {",
+									"    pm.environment.set(\"jwt_token\", token);",
+									"    console.log(\"Token JWT (Super Admin) salvo!\");",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "superadmin123"
+								},
+								{
+									"key": "username",
+									"value": "00000000000"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/authenticate",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"authenticate"
+							]
+						},
+						"description": "Usa as credenciais do DataLoader: superadmin@sistema.com (CPF: 00000000000), Senha: superadmin123"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "2. Registro Público",
+			"description": "Endpoint público para auto-registro de novos clientes. Cria a Empresa (como GRATUITO) e o primeiro Admin.",
+			"item": [
+				{
+					"name": "POST Registrar Novo Cliente",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"razaoSocial\": \"Empresa Auto Registro LTDA\",\n    \"nomeFantasia\": \"Auto Registro Transp\",\n    \"cnpj\": \"77889900000144\",\n    \"adminNome\": \"Admin Auto Registrado\",\n    \"adminSenha\": \"senhaAutoRegistro123\",\n    \"adminCpf\": \"44455566677\",\n    \"adminEmail\": \"admin@autoregistro.com\",\n    \"adminDataNascimento\": \"1992-02-02\",\n    \"adminTelefone\": \"11944443333\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/public/register",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"public",
+								"register"
+							]
+						},
+						"description": "Endpoint público para um novo cliente se registrar. Cria a empresa (com plano GRATUITO) e o primeiro usuário admin."
+					},
+					"response": []
+				}
+			],
+			"auth": {
+				"type": "noauth"
+			}
+		},
+		{
+			"name": "3. Pagamentos (Pix e Webhook)",
+			"description": "Fluxo de pagamento. O primeiro endpoint é privado (requer token) e o segundo é público (para o Mercado Pago).",
+			"item": [
+				{
+					"name": "POST Criar Pagamento Pix (Gerar QR Code)",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"transactionAmount\": 149.90,\n    \"description\": \"Upgrade Plano PRO\",\n    \"email\": \"cliente@empresa.com\",\n    \"identificationType\": \"CPF\",\n    \"identificationNumber\": \"12345678901\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/pagamentos/pix",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"pagamentos",
+								"pix"
+							]
+						},
+						"description": "Endpoint privado (requer token) que o frontend chama para iniciar o upgrade. \n1. Cria um `PedidoPagamento` local como PENDENTE.\n2. Chama o Mercado Pago.\n3. Retorna o `qrCodeBase64` e o `qrCode` para o frontend."
+					},
+					"response": []
+				},
+				{
+					"name": "[WEBHOOK] POST Confirmar Pagamento (MP)",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"type\": \"payment\",\n    \"data\": {\n        \"id\": \"123456789\"\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/public/webhooks/mercadopago",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"public",
+								"webhooks",
+								"mercadopago"
+							]
+						},
+						"description": "Endpoint PÚBLICO que o Mercado Pago chama (via ngrok em teste).\nDispara a lógica no `PagamentoService` para consultar o status do pagamento e atualizar o `TipoPlano` da `Empresa` para `PAGO`."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "4. Empresas",
+			"description": "Gerencia Empresas. A criação (POST) só funciona com token de SUPER ADMIN. A atualização (PATCH) funciona para Super Admin (qualquer ID) ou Admin Cliente (próprio ID).",
+			"item": [
+				{
+					"name": "GET Listar Empresas",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/empresas",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"empresas"
+							]
+						},
+						"description": "Lista empresas. Super Admin vê todas. Admin Cliente vê apenas a sua."
+					},
+					"response": []
+				},
+				{
+					"name": "GET Buscar Empresa por ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/empresas/2",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"empresas",
+								"2"
+							]
+						},
+						"description": "Busca uma empresa específica pelo ID."
+					},
+					"response": []
+				},
+				{
+					"name": "[SUPER ADMIN] POST Criar Empresa",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"razaoSocial\": \"Empresa Teste Postman LTDA\",\n  \"nomeFantasia\": \"Postman Transp\",\n  \"cnpj\": \"99998888000177\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/empresas",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"empresas"
+							]
+						},
+						"description": "Endpoint para criar empresas. Só funciona se logado como SUPER ADMIN."
+					},
+					"response": []
+				},
+				{
+					"name": "PATCH Atualizar Empresa (Parcial)",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nomeFantasia\": \"Nome Fantasia (PATCH)\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/empresas/2",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"empresas",
+								"2"
+							]
+						},
+						"description": "Atualiza PARCIALMENTE os dados de uma empresa. Envie apenas os campos que mudaram."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "5. Usuários",
+			"description": "Gerencia Usuários.",
+			"item": [
+				{
+					"name": "GET Listar Usuários (Da Própria Empresa)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/usuarios?page=0&size=10&sort=nome,asc",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"usuarios"
+							],
+							"query": [
+								{
+									"key": "nome",
+									"value": "jo",
+									"disabled": true
+								},
+								{
+									"key": "page",
+									"value": "0"
+								},
+								{
+									"key": "size",
+									"value": "10"
+								},
+								{
+									"key": "sort",
+									"value": "nome,asc"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[CLIENTE ADMIN] POST Criar Usuário (Na Própria Empresa)",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"nome\": \"Novo Motorista Postman\",\n    \"senha\": \"senhaMotorista789\",\n    \"cpf\": \"10101010199\",\n    \"email\": \"novo.motorista99@empresa.com\",\n    \"dataNascimento\": \"1998-11-10\",\n    \"telefone\": \"11900001111\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/usuarios",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"usuarios"
+							]
+						},
+						"description": "Admin Cliente cria novos usuários (ex: Motoristas) DENTRO da sua própria empresa. \n**Falhará (409 Conflict) se a empresa estiver no Plano Gratuito e já tiver 5 usuários.**"
+					},
+					"response": []
+				},
+				{
+					"name": "[SUPER ADMIN] POST Criar Admin para Empresa",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"nome\": \"Admin Empresa 99\",\n    \"senha\": \"senhaCliente123\",\n    \"cpf\": \"11122233399\",\n    \"email\": \"admin@empresa99.com\",\n    \"dataNascimento\": \"1990-01-01\",\n    \"telefone\": \"11988887777\",\n    \"empresaId\": 3 \n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/admin/usuarios",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"admin",
+								"usuarios"
+							]
+						},
+						"description": "**EXCLUSIVO PARA SUPER ADMIN.** Cria o primeiro usuário (Admin) para uma empresa."
+					},
+					"response": []
+				},
+				{
+					"name": "PATCH Atualizar Usuário (Parcial)",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"nome\": \"Nome Atualizado (PATCH)\",\n    \"telefone\": \"11900002222\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/usuarios/3",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"usuarios",
+								"3"
+							]
+						},
+						"description": "Atualiza PARCIALMENTE um usuário existente."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "6. Perfil Motorista",
+			"description": "Gerencia os perfis de motorista. O ID do Perfil é o mesmo ID do Usuário.",
+			"item": [
+				{
+					"name": "POST Criar Perfil de Motorista",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"usuarioId\": 3,\n    \"tipoCnh\": \"D\",\n    \"numeroCnh\": \"23456789012\",\n    \"desempenho\": 9\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/perfis-motorista",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"perfis-motorista"
+							]
+						},
+						"description": "Cria um novo perfil de motorista para um usuário existente (ex: usuário ID 3, 'Carlos Santos'). \n**Falhará (409 Conflict) se a empresa estiver no Plano Gratuito e já tiver 5 motoristas.**"
+					},
+					"response": []
+				},
+				{
+					"name": "GET Listar Todos os Perfis (Da Empresa)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/perfis-motorista",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"perfis-motorista"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET Buscar Perfil por ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/perfis-motorista/3",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"perfis-motorista",
+								"3"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PUT Atualizar Perfil",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"usuarioId\": 3,\n    \"tipoCnh\": \"AE\",\n    \"numeroCnh\": \"23456789012\",\n    \"desempenho\": 10\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/perfis-motorista/3",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"perfis-motorista",
+								"3"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "7. Veículos",
+			"description": "Gerencia os Veículos da empresa.",
+			"item": [
+				{
+					"name": "POST Criar Veículo",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"numeroVeiculo\": \"V-P01\",\n    \"placa\": \"PXE1A23\",\n    \"tipoVeiculo\": \"van\",\n    \"anoFabricacao\": 2024,\n    \"marca\": \"Mercedes\",\n    \"kmAtual\": 100,\n    \"limiteAvisoKm\": 10000,\n    \"status\": \"ativo\",\n    \"empresaId\": 2\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/veiculos",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"veiculos"
+							]
+						},
+						"description": "Cria um novo veículo para a empresa (ID 2 no exemplo).\n**Falhará (409 Conflict) se a empresa estiver no Plano Gratuito e já tiver 5 veículos.**"
+					},
+					"response": []
+				},
+				{
+					"name": "GET Listar Veículos (Da Empresa)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/veiculos?page=0&size=10",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"veiculos"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "0"
+								},
+								{
+									"key": "size",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{jwt_token}}",
+				"type": "string"
+			}
+		]
+	},
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:8080"
+		},
+		{
+			"key": "jwt_token",
+			"value": ""
+		}
+	]
+}

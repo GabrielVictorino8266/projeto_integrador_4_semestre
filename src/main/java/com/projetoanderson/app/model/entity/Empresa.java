@@ -2,15 +2,20 @@ package com.projetoanderson.app.model.entity;
 
 import java.util.List;
 
+import com.projetoanderson.app.model.entity.enums.TipoPlano;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
 
 @Entity
 @Table(name="empresas")
@@ -19,6 +24,11 @@ public class Empresa extends Auditoria {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+	
+	@NotNull
+	@Enumerated(EnumType.STRING)
+	@Column(name="tipo_plano", nullable=false, length=20)
+	private TipoPlano tipoPlano = TipoPlano.GRATUITO;
 	
 	@Column(name="razao_social", nullable=false, length = 255)
 	private String razaoSocial;
@@ -41,6 +51,14 @@ public class Empresa extends Auditoria {
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+	
+	public TipoPlano getTipoPlano() {
+		return tipoPlano;
+	}
+
+	public void setTipoPlano(TipoPlano tipoPlano) {
+		this.tipoPlano = tipoPlano;
 	}
 
 	public String getRazaoSocial() {

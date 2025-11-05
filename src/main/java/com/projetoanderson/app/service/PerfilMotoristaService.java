@@ -3,12 +3,18 @@ package com.projetoanderson.app.service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.projetoanderson.app.dto.PerfilMotoristaRequestDTO;
 import com.projetoanderson.app.dto.PerfilMotoristaResponseDTO;
+import com.projetoanderson.app.model.entity.Empresa;
 import com.projetoanderson.app.model.entity.PerfilMotorista;
 import com.projetoanderson.app.model.entity.Usuario;
+import com.projetoanderson.app.model.entity.enums.TipoPlano;
+import com.projetoanderson.app.repository.EmpresaRepository;
 import com.projetoanderson.app.repository.PerfilMotoristaRepository;
 import com.projetoanderson.app.repository.UsuarioRepository;
 
@@ -17,10 +23,12 @@ public class PerfilMotoristaService {
 	
 	private final PerfilMotoristaRepository perfilMotoristaRepository;
     private final UsuarioRepository usuarioRepository;
+    private final EmpresaRepository empresaRepository;
 
-    public PerfilMotoristaService(PerfilMotoristaRepository perfilMotoristaRepository, UsuarioRepository usuarioRepository) {
+    public PerfilMotoristaService(PerfilMotoristaRepository perfilMotoristaRepository, UsuarioRepository usuarioRepository, EmpresaRepository empresaRepository) {
         this.perfilMotoristaRepository = perfilMotoristaRepository;
         this.usuarioRepository = usuarioRepository;
+        this.empresaRepository = empresaRepository;
     }
 
     private PerfilMotoristaResponseDTO toResponseDTO(PerfilMotorista perfil) {
@@ -30,9 +38,22 @@ public class PerfilMotoristaService {
         dto.setNumeroCnh(perfil.getNumeroCnh());
         dto.setDesempenho(perfil.getDesempenho());
         dto.setNomeMotorista(perfil.getUsuario().getNome());
+        if (perfil.getUsuario() != null) {
+            dto.setNomeMotorista(perfil.getUsuario().getNome());
+         }
         return dto;
     }
+    
+    private void validarLimiteDeMotoristas(Empresa empresa) {
+        if (empresa.getTipoPlano() == TipoPlano.GRATUITO) {
+            long contagemAtual = perfilMotoristaRepository.countByEmpresaId(empresa.getId());
+            if (contagemAtual >= 5) { // Seu limite de 5
+                throw new ResponseStatusException(HttpStatus.CONFLICT, "Limite de 5 motoristas atingido para o plano gratuito.");
+            }
+        }
+    }
 
+    @Transactional
     public PerfilMotoristaResponseDTO criar(PerfilMotoristaRequestDTO dto) {
         if (perfilMotoristaRepository.existsById(dto.getUsuarioId())) {
             throw new RuntimeException("Este usuário já possui um perfil de motorista.");
@@ -43,6 +64,11 @@ public class PerfilMotoristaService {
 
         Usuario usuario = usuarioRepository.findById(dto.getUsuarioId())
                 .orElseThrow(() -> new RuntimeException("Usuário com o ID " + dto.getUsuarioId() + " não encontrado."));
+        
+        Empresa empresa = empresaRepository.findById(usuario.getEmpresa().getId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.CONFLICT, "Empresa do usuário não encontrada."));
+           
+        validarLimiteDeMotoristas(empresa);
 
         PerfilMotorista novoPerfil = new PerfilMotorista();
         novoPerfil.setTipoCnh(dto.getTipoCnh());
