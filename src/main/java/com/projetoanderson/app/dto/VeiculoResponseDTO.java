@@ -4,6 +4,9 @@ import com.projetoanderson.app.model.entity.Veiculo;
 import com.projetoanderson.app.model.entity.enums.StatusVeiculo;
 import com.projetoanderson.app.model.entity.enums.TipoVeiculo;
 
+/**
+ * DTO (record) para retornar os dados de um veículo.
+ */
 public record VeiculoResponseDTO(
     Long id,
     String numeroVeiculo,

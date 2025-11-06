@@ -10,11 +10,14 @@ import com.projetoanderson.app.model.entity.enums.TipoVeiculo;
 public class VeiculoSpecification {
 
     public static Specification<Veiculo> comEmpresa(Long empresaId) {
-        return (root, query, builder) -> builder.equal(root.get("empresa").get("id"), empresaId);
+        if (empresaId == null) {
+            return null;
+        }
+        return (root, query, builder) -> 
+            builder.equal(root.get("empresa").get("id"), empresaId);
     }
 
     public static Specification<Veiculo> comPlaca(String placa) {
-        // Retorna nulo se o filtro não for fornecido, o que é ignorado pelo .and()
         if (!StringUtils.hasText(placa)) {
             return null;
         }
@@ -38,7 +41,7 @@ public class VeiculoSpecification {
             TipoVeiculo tipo = TipoVeiculo.fromString(tipoVeiculo);
             return (root, query, builder) -> builder.equal(root.get("tipoVeiculo"), tipo);
         } catch (IllegalArgumentException e) {
-            // Se o tipo for inválido, retorna uma condição que nunca será verdadeira.
+            // Se o tipo for inválido (ex: "JATO"), retorna uma condição que nunca será verdadeira.
             return (root, query, builder) -> builder.disjunction();
         }
     }

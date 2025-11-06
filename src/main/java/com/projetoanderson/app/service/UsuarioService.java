@@ -3,6 +3,7 @@ package com.projetoanderson.app.service; // Ajuste o pacote se necessário
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,6 +19,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.projetoanderson.app.dto.UsuarioAtualContainerDTO;
+import com.projetoanderson.app.dto.UsuarioAtualResponseDTO;
 import com.projetoanderson.app.dto.UsuarioPatchDTO; // Importar DTO Patch
 import com.projetoanderson.app.dto.UsuarioRequestDTO;
 import com.projetoanderson.app.dto.UsuarioResponseDTO; // Assumindo que existe
@@ -184,8 +187,7 @@ public class UsuarioService {
 		Usuario usuarioSalvo = usuarioRepository.save(novoUsuario);
 		return converterParaResponseDTO(usuarioSalvo);
 	}
-
-
+  
     @Transactional
     public UsuarioResponseDTO atualizarUsuarioParcialmente(Long id, UsuarioPatchDTO dto) { // Usa PatchDTO
         validarAcessoUsuario(id);
@@ -198,6 +200,14 @@ public class UsuarioService {
 
         if (StringUtils.hasText(dto.getNome()) && !dto.getNome().equals(usuarioAAtualizar.getNome())) {
             usuarioAAtualizar.setNome(dto.getNome());
+            modificado = true;
+        }
+        
+        if (StringUtils.hasText(dto.getCpf()) && !dto.getCpf().equals(usuarioAAtualizar.getCpf())) {
+            if (usuarioRepository.existsByCpf(dto.getCpf())) {
+                throw new ResponseStatusException(HttpStatus.CONFLICT, "O CPF " + dto.getCpf() + " já está em uso no sistema.");
+            }
+            usuarioAAtualizar.setCpf(dto.getCpf());
             modificado = true;
         }
 
@@ -232,6 +242,54 @@ public class UsuarioService {
             usuarioAAtualizar = usuarioRepository.save(usuarioAAtualizar);
         }
         return converterParaResponseDTO(usuarioAAtualizar);
+    }
+    
+    @Transactional(readOnly = true)
+    public UsuarioAtualContainerDTO buscarUsuarioAtual() {
+        UsuarioAuthenticated principal = getUsuarioAutenticado();
+        
+        Long usuarioId = principal.getUsuario().getId();
+        Usuario usuario = usuarioRepository.findById(usuarioId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado"));
+
+        UsuarioAtualResponseDTO dto = converterParaUsuarioAtualDTO(usuario);
+        
+        return new UsuarioAtualContainerDTO(dto);
+    }
+    
+    private UsuarioAtualResponseDTO converterParaUsuarioAtualDTO(Usuario usuario) {
+    	UsuarioAtualResponseDTO dto = new UsuarioAtualResponseDTO();
+    	dto.setId(usuario.getId());
+    	dto.setCpf(usuario.getCpf());
+    	dto.setEmail(usuario.getEmail());
+    	dto.setNome(usuario.getNome());
+    	dto.setCpf(usuario.getCpf());
+    	dto.setTelefone(usuario.getTelefone());
+    	dto.setRole(getRolePrioritaria(usuario.getFuncoes()));
+    	if(usuario.getEmpresa() != null) {
+    		dto.setPlano(usuario.getEmpresa().getTipoPlano().name());
+    	}
+    	
+    	return dto;
+    }
+    
+    private String getRolePrioritaria(Set<Funcao> funcoes) {
+    	if(funcoes == null || funcoes.isEmpty()) {
+    		return null;
+    	}
+		Set<String> nomeFuncoes = funcoes.stream().map(Funcao::getNome).collect(Collectors.toSet());
+		
+		if (nomeFuncoes.contains(Funcao.ROLE_SUPER_ADMIN)) {
+            return "SUPER_ADMIN";
+        }
+        if (nomeFuncoes.contains(Funcao.ROLE_ADMIN)) {
+            return "ADMIN";
+        }
+        if (nomeFuncoes.contains(Funcao.ROLE_MOTORISTA)) {
+            return "MOTORISTA";
+        }
+    	
+    	return "";
     }
 
     private UsuarioResponseDTO converterParaResponseDTO(Usuario usuario) {

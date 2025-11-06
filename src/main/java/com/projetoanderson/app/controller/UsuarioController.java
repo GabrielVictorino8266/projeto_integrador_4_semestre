@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.projetoanderson.app.dto.UsuarioAtualContainerDTO;
 import com.projetoanderson.app.dto.UsuarioPatchDTO;
 import com.projetoanderson.app.dto.UsuarioRequestDTO;
 import com.projetoanderson.app.dto.UsuarioResponseDTO;
@@ -66,6 +67,13 @@ public class UsuarioController {
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.noContent().build());
     }
+    
+    @GetMapping("/me")
+    public ResponseEntity<UsuarioAtualContainerDTO> buscarUsuarioAtual() {
+        UsuarioAtualContainerDTO usuarioDTO = usuarioService.buscarUsuarioAtual();
+        return ResponseEntity.ok(usuarioDTO);
+    }
+    
 
     @PostMapping
     public ResponseEntity<UsuarioResponseDTO> criar(

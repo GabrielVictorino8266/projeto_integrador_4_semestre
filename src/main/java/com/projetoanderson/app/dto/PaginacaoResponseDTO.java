@@ -3,6 +3,10 @@ package com.projetoanderson.app.dto;
 import org.springframework.data.domain.Page;
 import java.util.List;
 
+/**
+ * DTO genérico para encapsular respostas paginadas no formato
+ * { "data": [...], "pagination": {...} }
+ */
 public class PaginacaoResponseDTO<T> {
 
     private List<T> data;
@@ -11,7 +15,7 @@ public class PaginacaoResponseDTO<T> {
     public PaginacaoResponseDTO(Page<T> page) {
         this.data = page.getContent();
         this.pagination = new PaginationMetadata(
-                page.getNumber(),
+                page.getNumber(), // Página atual (base 0)
                 page.getSize(),
                 page.getTotalPages(),
                 page.getTotalElements()
@@ -47,36 +51,13 @@ public class PaginacaoResponseDTO<T> {
             this.totalItems = totalItems;
         }
 
-        public int getPage() {
-            return page;
-        }
-
-        public void setPage(int page) {
-            this.page = page;
-        }
-
-        public int getSize() {
-            return size;
-        }
-
-        public void setSize(int size) {
-            this.size = size;
-        }
-
-        public long getTotalPages() {
-            return totalPages;
-        }
-
-        public void setTotalPages(long totalPages) {
-            this.totalPages = totalPages;
-        }
-
-        public long getTotalItems() {
-            return totalItems;
-        }
-
-        public void setTotalItems(long totalItems) {
-            this.totalItems = totalItems;
-        }
+        public int getPage() { return page; }
+        public void setPage(int page) { this.page = page; }
+        public int getSize() { return size; }
+        public void setSize(int size) { this.size = size; }
+        public long getTotalPages() { return totalPages; }
+        public void setTotalPages(long totalPages) { this.totalPages = totalPages; }
+        public long getTotalItems() { return totalItems; }
+        public void setTotalItems(long totalItems) { this.totalItems = totalItems; }
     }
 }

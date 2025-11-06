@@ -1,64 +1,78 @@
 package com.projetoanderson.app.dto; // Verifique e ajuste seu pacote
 
+import java.time.LocalDate;
+
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Past;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-import java.time.LocalDate;
 
 public class UsuarioPatchDTO {
 
-    @Size(min = 3, max = 100, message = "Nome deve ter entre 3 e 100 caracteres, se informado.")
-    private String nome;
+	@Size(min = 3, max = 100, message = "Nome deve ter entre 3 e 100 caracteres, se informado.")
+	private String nome;
 
-    @Size(min = 6, message = "Senha deve ter no mínimo 6 caracteres, se informada.")
-    private String senha;
+	@Size(min = 6, message = "Senha deve ter no mínimo 6 caracteres, se informada.")
+	private String senha;
 
-    @Email(message = "Formato de e-mail inválido, se informado.")
-    private String email;
+	@Email(message = "Formato de e-mail inválido, se informado.")
+	private String email;
 
-    @Past(message = "A data de nascimento deve ser no passado, se informada.")
-    private LocalDate dataNascimento;
+	@Past(message = "A data de nascimento deve ser no passado, se informada.")
+	private LocalDate dataNascimento;
 
-    @Size(max = 20, message = "Telefone não pode exceder 20 caracteres, se informado.")
-    private String telefone;
+	@Size(max = 20, message = "Telefone não pode exceder 20 caracteres, se informado.")
+	private String telefone;
 
-    public String getNome() {
-        return nome;
-    }
+	@Pattern(regexp = "^\\d{11}$", message = "CPF deve conter 11 dígitos, se informado.")
+	private String cpf;
 
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
+	public String getNome() {
+		return nome;
+	}
 
-    public String getSenha() {
-        return senha;
-    }
+	public void setNome(String nome) {
+		this.nome = nome;
+	}
 
-    public void setSenha(String senha) {
-        this.senha = senha;
-    }
+	public String getSenha() {
+		return senha;
+	}
 
-    public String getEmail() {
-        return email;
-    }
+	public void setSenha(String senha) {
+		this.senha = senha;
+	}
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
+	public String getEmail() {
+		return email;
+	}
 
-    public LocalDate getDataNascimento() {
-        return dataNascimento;
-    }
+	public void setEmail(String email) {
+		this.email = email;
+	}
 
-    public void setDataNascimento(LocalDate dataNascimento) {
-        this.dataNascimento = dataNascimento;
-    }
+	public LocalDate getDataNascimento() {
+		return dataNascimento;
+	}
 
-    public String getTelefone() {
-        return telefone;
-    }
+	public void setDataNascimento(LocalDate dataNascimento) {
+		this.dataNascimento = dataNascimento;
+	}
 
-    public void setTelefone(String telefone) {
-        this.telefone = telefone;
-    }
+	public String getTelefone() {
+		return telefone;
+	}
+
+	public void setTelefone(String telefone) {
+		this.telefone = telefone;
+	}
+
+	public String getCpf() {
+		return cpf;
+	}
+
+	public void setCpf(String cpf) {
+		this.cpf = cpf;
+	}
+
 }

@@ -3,45 +3,39 @@ package com.projetoanderson.app.dto;
 import com.projetoanderson.app.model.entity.enums.StatusVeiculo;
 import com.projetoanderson.app.model.entity.enums.TipoVeiculo;
 import com.projetoanderson.app.validation.ValidEnum;
-import jakarta.validation.constraints.*;
 
-public class VeiculoRequestDTO {
+import jakarta.validation.constraints.AssertTrue;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 
-	@NotEmpty(message = "O número do veículo é obrigatório.")
-	@Size(max = 10)
+
+public class VeiculoPatchDTO {
+
+	@Size(max = 10, message = "Número do veículo não pode exceder 10 caracteres.")
 	private String numeroVeiculo;
 
-	@NotEmpty(message = "A placa é obrigatória.")
-	@Size(max = 8)
+	@Size(max = 8, message = "Placa não pode exceder 8 caracteres.")
 	@Pattern(regexp = "^[A-Z]{3}[0-9][0-9A-Z][0-9]{2}$", message = "Formato de placa inválido (padrão antigo ou Mercosul).")
 	private String placa;
 
-	@NotEmpty(message = "O tipo do veículo é obrigatório.")
 	@ValidEnum(enumClass = TipoVeiculo.class, message = "Tipo de veículo inválido. Valores aceitos: {enumValues}", ignoreCase = true)
 	private String tipoVeiculo;
 
-	@NotNull(message = "O ano de fabricação é obrigatório.")
-	@Min(1900)
+	@Min(value = 1900, message = "Ano de fabricação deve ser no mínimo 1900.")
 	private Integer anoFabricacao;
 
-	@NotEmpty(message = "A marca é obrigatória.")
-	@Size(max = 20)
+	@Size(max = 20, message = "Marca não pode exceder 20 caracteres.")
 	private String marca;
 
-	@NotNull(message = "A quilometragem atual é obrigatória.")
-	@Min(0)
+	@Min(value = 0, message = "KM Atual deve ser no mínimo 0.")
 	private Integer kmAtual;
 
-	@NotNull(message = "O limite de KM para aviso é obrigatório.")
-	@Min(0)
+	@Min(value = 0, message = "Limite de KM para aviso deve ser no mínimo 0.")
 	private Integer limiteAvisoKm;
 
-    @NotEmpty(message = "O status é obrigatório.")
 	@ValidEnum(enumClass = StatusVeiculo.class, message = "Status inválido. Valores aceitos: {enumValues}", ignoreCase = true)
-	private String status = StatusVeiculo.ATIVO.getValor(); // Padrão ATIVO
-
-	@NotNull(message = "O ID da empresa é obrigatório.")
-	private Long empresaId;
+	private String status;
 
 	@AssertTrue(message = "O ano de fabricação não pode ser maior que o ano atual.")
 	private boolean isAnoFabricacaoValid() {
@@ -52,22 +46,19 @@ public class VeiculoRequestDTO {
 	}
 
 	public String getNumeroVeiculo() { return numeroVeiculo; }
-	public String getPlaca() { return placa; }
-	public String getTipoVeiculo() { return tipoVeiculo; }
-	public Integer getAnoFabricacao() { return anoFabricacao; }
-	public String getMarca() { return marca; }
-	public Integer getKmAtual() { return kmAtual; }
-	public Integer getLimiteAvisoKm() { return limiteAvisoKm; }
-	public String getStatus() { return status; }
-	public Long getEmpresaId() { return empresaId; }
-
 	public void setNumeroVeiculo(String numeroVeiculo) { this.numeroVeiculo = numeroVeiculo; }
+	public String getPlaca() { return placa; }
 	public void setPlaca(String placa) { this.placa = placa; }
+	public String getTipoVeiculo() { return tipoVeiculo; }
 	public void setTipoVeiculo(String tipoVeiculo) { this.tipoVeiculo = tipoVeiculo; }
+	public Integer getAnoFabricacao() { return anoFabricacao; }
 	public void setAnoFabricacao(Integer anoFabricacao) { this.anoFabricacao = anoFabricacao; }
+	public String getMarca() { return marca; }
 	public void setMarca(String marca) { this.marca = marca; }
+	public Integer getKmAtual() { return kmAtual; }
 	public void setKmAtual(Integer kmAtual) { this.kmAtual = kmAtual; }
+	public Integer getLimiteAvisoKm() { return limiteAvisoKm; }
 	public void setLimiteAvisoKm(Integer limiteAvisoKm) { this.limiteAvisoKm = limiteAvisoKm; }
+	public String getStatus() { return status; }
 	public void setStatus(String status) { this.status = status; }
-	public void setEmpresaId(Long empresaId) { this.empresaId = empresaId; }
 }

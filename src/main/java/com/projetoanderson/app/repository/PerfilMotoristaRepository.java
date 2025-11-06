@@ -1,5 +1,6 @@
 package com.projetoanderson.app.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -16,4 +17,7 @@ public interface PerfilMotoristaRepository extends JpaRepository<PerfilMotorista
     
     @Query("SELECT COUNT(p) FROM PerfilMotorista p WHERE p.usuario.empresa.id = :empresaId")
     long countByEmpresaId(@Param("empresaId") Long empresaId);
+    
+    @Query("SELECT p FROM PerfilMotorista p WHERE p.usuario.empresa.id = :empresaId")
+    List<PerfilMotorista> findAllByUsuarioEmpresaId(@Param("empresaId") Long empresaId);
 }
