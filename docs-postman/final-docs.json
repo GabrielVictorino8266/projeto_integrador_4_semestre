@@ -1,8 +1,8 @@
 {
 	"info": {
-		"_postman_id": "a1b2c3d4-e5f6-4a7b-8c9d-123456789ACF",
-		"name": "Projeto Integrador 4 Semestre - API Completa (v4-PATCH)",
-		"description": "Coleção unificada contendo todos os endpoints do projeto. Atualizado para usar PATCH em vez de PUT para veículos.",
+		"_postman_id": "a1b2c3d4-e5f6-4a7b-8c9d-123456789AEF",
+		"name": "Projeto Integrador 4 Semestre - API Completa (v5-Manutencao)",
+		"description": "Coleção unificada contendo todos os endpoints do projeto. Adicionado CRUD completo de Manutenções.",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
@@ -738,6 +738,204 @@
 								"1"
 							]
 						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "8. Manutenções (NOVO)",
+			"description": "Gerencia os registros de manutenção dos veículos.",
+			"item": [
+				{
+					"name": "GET /lookups (Tipos de Manutenção)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/manutencoes/lookups",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"manutencoes",
+								"lookups"
+							]
+						},
+						"description": "Retorna os tipos de manutenção (PREVENTIVA, CORRETIVA) para preencher <select> no frontend."
+					},
+					"response": []
+				},
+				{
+					"name": "POST Criar Manutenção",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"dataManutencao\": \"2025-11-01\",\n    \"descricao\": \"Troca de óleo e filtro - Postman\",\n    \"custo\": 450.50,\n    \"tipoManutencao\": \"PREVENTIVA\",\n    \"veiculoId\": 1\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/manutencoes",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"manutencoes"
+							]
+						},
+						"description": "Cria um novo registro de manutenção para um veículo. O usuário logado deve ter acesso ao `veiculoId` informado."
+					},
+					"response": []
+				},
+				{
+					"name": "GET Listar Manutenções (com Filtros)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/manutencoes?veiculo_id=1&tipo=PREVENTIVA&page=0&size=10",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"manutencoes"
+							],
+							"query": [
+								{
+									"key": "veiculo_id",
+									"value": "1",
+									"description": "(Opcional) Filtra por ID do veículo."
+								},
+								{
+									"key": "tipo",
+									"value": "PREVENTIVA",
+									"description": "(Opcional) Filtra por tipo (PREVENTIVA ou CORRETIVA)",
+									"disabled": true
+								},
+								{
+									"key": "data_inicio",
+									"value": "2025-01-01",
+									"description": "(Opcional) Data de início (YYYY-MM-DD)",
+									"disabled": true
+								},
+								{
+									"key": "data_fim",
+									"value": "2025-12-31",
+									"description": "(Opcional) Data de fim (YYYY-MM-DD)",
+									"disabled": true
+								},
+								{
+									"key": "page",
+									"value": "0"
+								},
+								{
+									"key": "size",
+									"value": "10"
+								}
+							]
+						},
+						"description": "Lista as manutenções da empresa logada, com filtros opcionais."
+					},
+					"response": []
+				},
+				{
+					"name": "GET Buscar Manutenção por ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/manutencoes/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"manutencoes",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PATCH Atualizar Manutenção (Parcial)",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"descricao\": \"Troca de óleo e filtro - (Editado via PATCH)\",\n    \"custo\": 475.00\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/manutencoes/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"manutencoes",
+								"1"
+							]
+						},
+						"description": "Atualiza parcialmente um registro de manutenção. Envie apenas os campos que deseja alterar."
+					},
+					"response": []
+				},
+				{
+					"name": "DELETE Deletar Manutenção",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/manutencoes/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"manutencoes",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "9. Dashboard (NOVO)",
+			"description": "Endpoints que agregam dados para o painel de controle do Admin Cliente.",
+			"item": [
+				{
+					"name": "GET /dashboard",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/dashboard",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"dashboard"
+							]
+						},
+						"description": "Retorna um JSON agregado com todos os dados para popular o painel de controle do Admin Cliente (KPIs, Gráficos, Alertas)."
 					},
 					"response": []
 				}

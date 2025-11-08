@@ -1,0 +1,344 @@
+{
+	"info": {
+		"_postman_id": "a1b2c3d4-e5f6-4a7b-8c9d-123456789AEF",
+		"name": "Projeto Integrador 4 Semestre - API Completa (v5-Manutencao)",
+		"description": "Coleção unificada contendo todos os endpoints do projeto. Adicionado CRUD completo de Manutenções.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "1. Autenticação",
+			"description": "Obtenha o Token JWT. Salva automaticamente na variável de ambiente `jwt_token`.",
+			"item": [
+				{
+					"name": "POST Authenticate (Admin Cliente)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const token = pm.response.text();",
+									"if (token) {",
+									"    pm.environment.set(\"jwt_token\", token);",
+									"    console.log(\"Token JWT (Admin Cliente) salvo!\");",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "admin123"
+								},
+								{
+									"key": "username",
+									"value": "12345678901"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/authenticate",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"authenticate"
+							]
+						},
+						"description": "Usa as credenciais do DataLoader: joao.silva@rapida.com.br (CPF: 12345678901), Senha: admin123"
+					},
+					"response": []
+				},
+				{
+					"name": "POST Authenticate (Super Admin)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const token = pm.response.text();",
+									"if (token) {",
+									"    pm.environment.set(\"jwt_token\", token);",
+									"    console.log(\"Token JWT (Super Admin) salvo!\");",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "superadmin123"
+								},
+								{
+									"key": "username",
+									"value": "00000000000"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/authenticate",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"authenticate"
+							]
+						},
+						"description": "Usa as credenciais do DataLoader: superadmin@sistema.com (CPF: 00000000000), Senha: superadmin123"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "2. Registro Público",
+			"description": "Endpoint público para auto-registro de novos clientes. Cria a Empresa (como GRATUITO) e o primeiro Admin.",
+			"item": [
+				{
+					"name": "POST Registrar Novo Cliente",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"razaoSocial\": \"Empresa Auto Registro LTDA\",\n    \"nomeFantasia\": \"Auto Registro Transp\",\n    \"cnpj\": \"77889900000144\",\n    \"adminNome\": \"Admin Auto Registrado\",\n    \"adminSenha\": \"senhaAutoRegistro123\",\n    \"adminCpf\": \"44455566677\",\n    \"adminEmail\": \"admin@autoregistro.com\",\n    \"adminDataNascimento\": \"1992-02-02\",\n    \"adminTelefone\": \"11944443333\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/public/register",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"public",
+								"register"
+							]
+						},
+						"description": "Endpoint público para um novo cliente se registrar. Cria a empresa (com plano GRATUITO) e o primeiro usuário admin."
+					},
+					"response": []
+				}
+			],
+			"auth": {
+				"type": "noauth"
+			}
+		},
+		{
+			"name": "3. Pagamentos (Pix e Webhook)",
+			"description": "Fluxo de pagamento. O primeiro endpoint é privado (requer token) e o segundo é público (para o Mercado Pago).",
+			"item": [
+				{
+					"name": "POST Criar Pagamento Pix (Gerar QR Code)",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"transactionAmount\": 1.50,\n    \"description\": \"Teste Upgrade Plano R$1.50\",\n    \"email\": \"seu.email.real@gmail.com\",\n    \"identificationType\": \"CPF\",\n    \"identificationNumber\": \"SEU_CPF_REAL_AQUI\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/pagamentos/pix",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"pagamentos",
+								"pix"
+							]
+						},
+						"description": "Endpoint privado (requer token) que o frontend chama para iniciar o upgrade. \n\n**IMPORTANTE:** Como este é um teste de produção (Heroku), use seu **CPF e E-mail reais** no Body para o pagamento de R$ 1,50 funcionar."
+					},
+					"response": []
+				},
+				{
+					"name": "[WEBHOOK] POST Confirmar Pagamento (MP)",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"type\": \"payment\",\n    \"data\": {\n        \"id\": \"123456789\"\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/public/webhooks/mercadopago",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"public",
+								"webhooks",
+								"mercadopago"
+							]
+						},
+						"description": "Endpoint PÚBLICO que o Mercado Pago chama (via ngrok em teste, ou Heroku em produção).\nDispara a lógica no `PagamentoService` para consultar o status do pagamento e atualizar o `TipoPlano` da `Empresa` para `PAGO`."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "4. Empresas",
+			"description": "Gerencia Empresas. A criação (POST) só funciona com token de SUPER ADMIN. A atualização (PATCH) funciona para Super Admin (qualquer ID) ou Admin Cliente (próprio ID).",
+			"item": [
+				{
+					"name": "GET Listar Empresas",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/empresas",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"empresas"
+							]
+						},
+						"description": "Lista empresas. Super Admin vê todas. Admin Cliente vê apenas a sua."
+					},
+					"response": []
+				},
+				{
+					"name": "GET Buscar Empresa por ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/empresas/2",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"empresas",
+								"2"
+							]
+						},
+						"description": "Busca uma empresa específica pelo ID."
+					},
+					"response": []
+				},
+				{
+					"name": "[SUPER ADMIN] POST Criar Empresa",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"razaoSocial\": \"Empresa Teste Postman LTDA\",\n  \"nomeFantasia\": \"Postman Transp\",\n  \"cnpj\": \"99998888000177\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/empresas",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"empresas"
+							]
+						},
+						"description": "Endpoint para criar empresas. Só funciona se logado como SUPER ADMIN."
+					},
+					"response": []
+				},
+				{
+					"name": "PATCH Atualizar Empresa (Parcial)",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nomeFantasia\": \"Nome Fantasia (PATCH)\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/empresas/2",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"empresas",
+								"2"
+							]
+						},
+						"description": "Atualiza PARCIALMENTE os dados de uma empresa. Envie apenas os campos que mudaram."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "5. Usuários",
+			"description": "Gerencia Usuários.",
+			"item": [
+				{
+					"name": "GET /me (Buscar Usuário Atual)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/usuarios/me",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"usuarios",
+								"me"
+							]
+						},
+						"description": "Busca os dados do usuáriopyrimidine
+{
+type: "tool_code",
+code: "print(google_search.search(queries=[\"Uptime Robot\", \"Better Uptime\", \"Pingdom free plan\", \"site monitoring services free\"]))\n"
+}
