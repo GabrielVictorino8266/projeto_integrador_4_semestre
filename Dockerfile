@@ -10,7 +10,9 @@ RUN mvn clean package -DskipTests
 FROM eclipse-temurin:17-jdk
 WORKDIR /app
 VOLUME /tmp
+RUN apt-get update && apt-get install -y curl coreutils && rm -rf /var/lib/apt/lists/*
 COPY --from=builder /app/target/*.jar app.jar
+
 
 # Variaveis de ambiente aqui
 #

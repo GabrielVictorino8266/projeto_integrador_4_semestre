@@ -1,0 +1,8 @@
+# 1. Comece com a mesma imagem que você já usa no dev
+FROM maven:3.9.6-eclipse-temurin-17
+
+# 2. Instale o 'curl' e o 'coreutils' (que contém o comando 'timeout')
+RUN apt-get update && apt-get install -y curl coreutils && rm -rf /var/lib/apt/lists/*
+
+# 3. Defina o diretório de trabalho
+WORKDIR /app
