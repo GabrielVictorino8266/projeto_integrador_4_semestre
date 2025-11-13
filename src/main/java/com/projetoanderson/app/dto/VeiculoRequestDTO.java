@@ -40,8 +40,6 @@ public class VeiculoRequestDTO {
 	@ValidEnum(enumClass = StatusVeiculo.class, message = "Status inválido. Valores aceitos: {enumValues}", ignoreCase = true)
 	private String status = StatusVeiculo.ATIVO.getValor(); // Padrão ATIVO
 
-	@NotNull(message = "O ID da empresa é obrigatório.")
-	private Long empresaId;
 
 	@AssertTrue(message = "O ano de fabricação não pode ser maior que o ano atual.")
 	private boolean isAnoFabricacaoValid() {
@@ -59,7 +57,6 @@ public class VeiculoRequestDTO {
 	public Integer getKmAtual() { return kmAtual; }
 	public Integer getLimiteAvisoKm() { return limiteAvisoKm; }
 	public String getStatus() { return status; }
-	public Long getEmpresaId() { return empresaId; }
 
 	public void setNumeroVeiculo(String numeroVeiculo) { this.numeroVeiculo = numeroVeiculo; }
 	public void setPlaca(String placa) { this.placa = placa; }
@@ -69,5 +66,4 @@ public class VeiculoRequestDTO {
 	public void setKmAtual(Integer kmAtual) { this.kmAtual = kmAtual; }
 	public void setLimiteAvisoKm(Integer limiteAvisoKm) { this.limiteAvisoKm = limiteAvisoKm; }
 	public void setStatus(String status) { this.status = status; }
-	public void setEmpresaId(Long empresaId) { this.empresaId = empresaId; }
 }

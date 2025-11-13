@@ -130,11 +130,12 @@ public class VeiculoService {
     
     @Transactional
     public VeiculoResponseDTO criar(VeiculoRequestDTO dto) {
-        validarAcessoEmpresa(dto.getEmpresaId());
+        // Obtém a empresa do usuário autenticado
+        Empresa empresa = getEmpresaDoUsuarioLogado();
+        if (empresa == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Usuário não está associado a uma empresa válida.");
+        }
         
-        Empresa empresa = empresaRepository.findById(dto.getEmpresaId())
-            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Empresa com ID " + dto.getEmpresaId() + " não encontrada."));
-            
         validarLimiteDeVeiculos(empresa);
 
         if (veiculoRepository.existsByPlaca(dto.getPlaca().toUpperCase())) {
