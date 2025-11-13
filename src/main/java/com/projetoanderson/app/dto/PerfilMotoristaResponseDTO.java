@@ -5,6 +5,7 @@ import com.projetoanderson.app.model.entity.enums.TipoCNH;
 public class PerfilMotoristaResponseDTO {
 
 	private Long id;
+    private Long usuarioId;
     private TipoCNH tipoCnh;
     private String numeroCnh;
     private Integer desempenho;
@@ -17,6 +18,14 @@ public class PerfilMotoristaResponseDTO {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Long getUsuarioId() {
+        return usuarioId;
+    }
+
+    public void setUsuarioId(Long usuarioId) {
+        this.usuarioId = usuarioId;
     }
 
     public TipoCNH getTipoCnh() {

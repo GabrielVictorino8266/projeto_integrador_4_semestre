@@ -77,6 +77,7 @@ public class PerfilMotoristaService {
         dto.setDesempenho(perfil.getDesempenho());
         if (perfil.getUsuario() != null) {
            dto.setNomeMotorista(perfil.getUsuario().getNome());
+           dto.setUsuarioId(perfil.getUsuario().getId());
         }
         return dto;
     }

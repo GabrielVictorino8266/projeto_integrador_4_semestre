@@ -11,11 +11,16 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.Version;
 
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
 public class Auditoria {
 	
+	@Version
+	@Column(name = "version")
+	private Long version;
+
 	@UuidGenerator(style = UuidGenerator.Style.AUTO)
 	@Column(name="uuid", nullable=false, updatable=false, unique=true, columnDefinition = "UUID")
 	private UUID uuid;
@@ -55,4 +60,11 @@ public class Auditoria {
 		this.isAtivo = isAtivo;
 	}
 	
+	public Long getVersion() {
+		return version;
+	}
+
+	public void setVersion(Long version) {
+		this.version = version;
+	}
 }
