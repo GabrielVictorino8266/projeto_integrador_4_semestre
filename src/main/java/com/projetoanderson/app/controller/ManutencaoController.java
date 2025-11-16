@@ -7,6 +7,9 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -40,19 +43,24 @@ public class ManutencaoController {
     }
 
     @GetMapping
-    public ResponseEntity<PaginacaoResponseDTO<ManutencaoResponseDTO>> buscarTodas(
-            @RequestParam(required = false) Long veiculo_id,
-            @RequestParam(required = false) String tipo,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate data_inicio,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate data_fim,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size
+    public ResponseEntity<Page<ManutencaoResponseDTO>> buscarTodas(
+            @RequestParam(required = false) Long id,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataManutencao,
+            @RequestParam(required = false) String descricao,
+            @RequestParam(required = false) Double custo,
+            @RequestParam(required = false) String tipoManutencao,
+            @RequestParam(required = false) Long veiculoId,
+            @RequestParam(required = false) String placaVeiculo,
+            @PageableDefault(size = 20, sort = "dataManutencao", direction = Direction.DESC) Pageable pageable
     ) {
         Page<ManutencaoResponseDTO> pagina = manutencaoService.buscarTodos(
-                veiculo_id, tipo, data_inicio, data_fim, page, size
+                id, dataManutencao, descricao, custo, tipoManutencao, veiculoId, placaVeiculo, pageable
         );
-        PaginacaoResponseDTO<ManutencaoResponseDTO> resposta = new PaginacaoResponseDTO<>(pagina);
-        return ResponseEntity.ok(resposta);
+        
+        if (pagina.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(pagina);
     }
 
     @GetMapping("/{id}")

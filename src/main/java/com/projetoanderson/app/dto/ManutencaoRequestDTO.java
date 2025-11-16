@@ -23,7 +23,7 @@ public class ManutencaoRequestDTO {
     private String descricao;
 
     @NotNull(message = "O custo é obrigatório.")
-    @DecimalMin(value = "0.01", message = "O custo deve ser maior que zero.")
+    @DecimalMin(value = "0.00", inclusive = true, message = "O custo não pode ser negativo.")
     private BigDecimal custo;
 
     @NotBlank(message = "O tipo de manutenção é obrigatório.")

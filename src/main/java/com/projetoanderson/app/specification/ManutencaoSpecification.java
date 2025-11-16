@@ -18,6 +18,51 @@ public class ManutencaoSpecification {
             builder.equal(root.get("veiculo").get("empresa").get("id"), empresaId);
     }
 
+    public static Specification<Manutencao> comId(Long id) {
+        if (id == null) {
+            return null;
+        }
+        return (root, query, builder) -> 
+            builder.equal(root.get("id"), id);
+    }
+
+    public static Specification<Manutencao> comDataManutencao(LocalDate dataManutencao) {
+        if (dataManutencao == null) {
+            return null;
+        }
+        return (root, query, builder) -> 
+            builder.equal(root.get("dataManutencao"), dataManutencao);
+    }
+
+    public static Specification<Manutencao> comDescricaoContendo(String descricao) {
+        if (!StringUtils.hasText(descricao)) {
+            return null;
+        }
+        return (root, query, builder) -> 
+            builder.like(builder.lower(root.get("descricao")), "%" + descricao.toLowerCase() + "%");
+    }
+
+    public static Specification<Manutencao> comCustoIgualA(Double custo) {
+        if (custo == null) {
+            return null;
+        }
+        return (root, query, builder) -> 
+            builder.equal(root.get("custo"), custo);
+    }
+
+    public static Specification<Manutencao> comTipoManutencao(String tipoManutencao) {
+        if (!StringUtils.hasText(tipoManutencao)) {
+            return null;
+        }
+        try {
+            TipoManutencao tipoEnum = TipoManutencao.valueOf(tipoManutencao.toUpperCase());
+            return (root, query, builder) -> 
+                builder.equal(root.get("tipoManutencao"), tipoEnum);
+        } catch (IllegalArgumentException e) {
+            return (root, query, builder) -> builder.disjunction();
+        }
+    }
+
     public static Specification<Manutencao> comVeiculo(Long veiculoId) {
         if (veiculoId == null) {
             return null;
@@ -25,17 +70,15 @@ public class ManutencaoSpecification {
         return (root, query, builder) -> 
             builder.equal(root.get("veiculo").get("id"), veiculoId);
     }
-    public static Specification<Manutencao> comTipo(String tipo) {
-        if (!StringUtils.hasText(tipo)) {
+
+    public static Specification<Manutencao> comPlacaVeiculoContendo(String placa) {
+        if (!StringUtils.hasText(placa)) {
             return null;
         }
-        try {
-            TipoManutencao tipoEnum = TipoManutencao.valueOf(tipo.toUpperCase());
-            return (root, query, builder) -> builder.equal(root.get("tipoManutencao"), tipoEnum);
-        } catch (IllegalArgumentException e) {
-            return (root, query, builder) -> builder.disjunction();
-        }
+        return (root, query, builder) -> 
+            builder.like(builder.lower(root.get("veiculo").get("placa")), "%" + placa.toLowerCase() + "%");
     }
+
     public static Specification<Manutencao> entreDatas(LocalDate inicio, LocalDate fim) {
         if (inicio != null && fim != null) {
             return (root, query, builder) -> 

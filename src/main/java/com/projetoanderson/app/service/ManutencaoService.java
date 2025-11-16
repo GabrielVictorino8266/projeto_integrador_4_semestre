@@ -1,11 +1,11 @@
 package com.projetoanderson.app.service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
@@ -102,21 +102,61 @@ public class ManutencaoService {
     // --- MÉTODOS CRUD ---
 
     @Transactional(readOnly = true)
-    public Page<ManutencaoResponseDTO> buscarTodos(Long veiculoId, String tipo, LocalDate dataInicio, LocalDate dataFim, int page, int size) {
-        
-        Pageable pageable = PageRequest.of(page, size, Sort.by("dataManutencao").descending());
-        
-        Specification<Manutencao> spec = Specification
-            .where(ManutencaoSpecification.comVeiculo(veiculoId))
-            .and(ManutencaoSpecification.comTipo(tipo))
-            .and(ManutencaoSpecification.entreDatas(dataInicio, dataFim));
+    public Page<ManutencaoResponseDTO> buscarTodos(
+            Long id,
+            LocalDate dataManutencao,
+            String descricao,
+            Double custo,
+            String tipoManutencao,
+            Long veiculoId,
+            String placaVeiculo,
+            Pageable pageable) {
+            
+        // Create a list to hold all filter specifications
+        List<Specification<Manutencao>> specs = new ArrayList<>();
 
+        // Add filters to the list if parameters are provided
+        if (id != null) {
+            specs.add(ManutencaoSpecification.comId(id));
+        }
+        if (dataManutencao != null) {
+            specs.add(ManutencaoSpecification.comDataManutencao(dataManutencao));
+        }
+        if (descricao != null && !descricao.isEmpty()) {
+            specs.add(ManutencaoSpecification.comDescricaoContendo(descricao));
+        }
+        if (custo != null) {
+            specs.add(ManutencaoSpecification.comCustoIgualA(custo));
+        }
+        if (tipoManutencao != null && !tipoManutencao.isEmpty()) {
+            specs.add(ManutencaoSpecification.comTipoManutencao(tipoManutencao));
+        }
+        if (veiculoId != null) {
+            specs.add(ManutencaoSpecification.comVeiculo(veiculoId));
+        }
+        if (placaVeiculo != null && !placaVeiculo.isEmpty()) {
+            specs.add(ManutencaoSpecification.comPlacaVeiculoContendo(placaVeiculo));
+        }
+
+        // Combine all filters with OR
+        Specification<Manutencao> combinedSpec = null;
+        if (!specs.isEmpty()) {
+            combinedSpec = specs.get(0);
+            for (int i = 1; i < specs.size(); i++) {
+                combinedSpec = combinedSpec.or(specs.get(i));
+            }
+        }
+
+        // Start with the combined OR conditions (if any)
+        Specification<Manutencao> spec = combinedSpec != null ? Specification.where(combinedSpec) : null;
+
+        // Add company filter with AND (for security, always apply company filter)
         if (!temRole(getUsuarioAutenticado(), Funcao.ROLE_SUPER_ADMIN)) {
-            spec = spec.and(ManutencaoSpecification.comEmpresa(getEmpresaDoUsuarioLogado().getId()));
+            Specification<Manutencao> companySpec = ManutencaoSpecification.comEmpresa(getEmpresaDoUsuarioLogado().getId());
+            spec = spec != null ? spec.and(companySpec) : companySpec;
         }
         
-        Page<Manutencao> pagina = manutencaoRepository.findAll(spec, pageable);
-        return pagina.map(ManutencaoResponseDTO::new);
+        return manutencaoRepository.findAll(spec, pageable).map(ManutencaoResponseDTO::new);
     }
 
     @Transactional(readOnly = true)
