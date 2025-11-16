@@ -93,7 +93,15 @@ public class VeiculoService {
 
 
     @Transactional(readOnly = true)
-    public Page<VeiculoResponseDTO> buscarTodos(Long empresaId, String placa, String tipoVeiculo, String status, String marca, int page, int size) {
+    public Page<VeiculoResponseDTO> buscarTodos(
+            Long empresaId, 
+            String placa, 
+            String tipoVeiculo, 
+            String status, 
+            String marca,
+            String modelo,
+            String chassi,
+            Pageable pageable) {
         
         Long idEmpresaFiltro;
         UsuarioAuthenticated usuarioLogado = getUsuarioAutenticado();
@@ -112,10 +120,12 @@ public class VeiculoService {
                 .and(VeiculoSpecification.comPlaca(placa))
                 .and(VeiculoSpecification.comTipo(tipoVeiculo))
                 .and(VeiculoSpecification.comStatus(status))
-                .and(VeiculoSpecification.comMarca(marca));
+                .and(VeiculoSpecification.comMarca(marca))
+                .and(VeiculoSpecification.comModelo(modelo))
+                .and(VeiculoSpecification.comChassi(chassi));
         
-        Pageable pageable = PageRequest.of(page, size);
-        return veiculoRepository.findAll(spec, pageable).map(VeiculoResponseDTO::new);
+        return veiculoRepository.findAll(spec, pageable)
+                .map(VeiculoResponseDTO::new);
     }
     
     @Transactional(readOnly = true)

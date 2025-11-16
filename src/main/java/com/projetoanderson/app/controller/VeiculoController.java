@@ -7,6 +7,9 @@ import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -40,21 +43,24 @@ public class VeiculoController {
     }
 
     @GetMapping
-    public ResponseEntity<PaginacaoResponseDTO<VeiculoResponseDTO>> buscarTodos(
+    public ResponseEntity<Page<VeiculoResponseDTO>> buscarTodos(
             @RequestParam(required = false) Long empresa_id,
             @RequestParam(required = false) String placa,
             @RequestParam(required = false) String tipoVeiculo,
             @RequestParam(required = false) String status,
             @RequestParam(required = false) String marca,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size
-    ) {
-        Page<VeiculoResponseDTO> paginaDeVeiculos = veiculoService.buscarTodos(
-            empresa_id, placa, tipoVeiculo, status, marca, page, size);
+            @RequestParam(required = false) String modelo,
+            @RequestParam(required = false) String chassi,
+            @PageableDefault(sort = "placa") Pageable pageable) {
+            
+        Page<VeiculoResponseDTO> pagina = veiculoService.buscarTodos(
+            empresa_id, placa, tipoVeiculo, status, marca, modelo, chassi, 
+            pageable);
         
-        PaginacaoResponseDTO<VeiculoResponseDTO> resposta = new PaginacaoResponseDTO<>(paginaDeVeiculos);
-        
-        return ResponseEntity.ok(resposta);
+        if (pagina.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(pagina);
     }
 
     @GetMapping("/{id}")

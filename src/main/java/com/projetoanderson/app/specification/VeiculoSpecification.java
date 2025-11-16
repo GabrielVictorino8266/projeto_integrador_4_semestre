@@ -57,4 +57,20 @@ public class VeiculoSpecification {
             return (root, query, builder) -> builder.disjunction();
         }
     }
+    
+    public static Specification<Veiculo> comModelo(String modelo) {
+        if (!StringUtils.hasText(modelo)) {
+            return null;
+        }
+        return (root, query, builder) -> 
+            builder.like(builder.lower(root.get("modelo")), "%" + modelo.toLowerCase() + "%");
+    }
+    
+    public static Specification<Veiculo> comChassi(String chassi) {
+        if (!StringUtils.hasText(chassi)) {
+            return null;
+        }
+        return (root, query, builder) -> 
+            builder.like(builder.lower(root.get("chassi")), "%" + chassi.toLowerCase() + "%");
+    }
 }
